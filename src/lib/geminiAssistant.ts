@@ -38,6 +38,9 @@ Keep it direct, professional, and practical for northern bush aviation operation
 `.trim();
 
   try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 10000); // 10s timeout
+
     const res = await fetch('/api/dispatch', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -45,7 +48,10 @@ Keep it direct, professional, and practical for northern bush aviation operation
         contents: promptContext,
         model: 'gemini-3-flash-preview',
       }),
+      signal: controller.signal,
     });
+
+    clearTimeout(timeoutId);
 
     if (res.ok) {
       const data = await res.json();
@@ -58,7 +64,7 @@ Keep it direct, professional, and practical for northern bush aviation operation
       }
     }
   } catch (err) {
-    console.warn('Gemini dispatch call failed, using deterministic operational brief.', err);
+    console.warn('Gemini dispatch call failed or timed out, using deterministic operational brief.', err);
   }
 
   // Deterministic high-quality fallback brief

@@ -5,7 +5,7 @@ export const DEFAULT_PLAN_CONFIG: PlanConfig = {
   toteInnerWidthIn: 14.0,
   toteInnerHeightIn: 11.0,
   toteUsableVolumeCuIn: 3600.0, // ~2.083 cu ft
-  toteMaxWeightLb: 55.0, // Operational safety limit per tote
+  toteMaxWeightLb: 55.0, // Assumed operational limit per tote — configurable, not a challenge-supplied value
   maxTotesPerCart: 5, // Default 5 totes per cart, configurable
   cessnaMaxTotes: 90,
   cessnaMaxPayloadLb: 2877.0, // CYQN to CYWP roundtrip payload allowance
@@ -17,6 +17,7 @@ export interface PackingResult {
   totes: Tote[];
   carts: PickerCart[];
   splitOrdersCount: number;
+  unpackableItems: LineItem[]; // Items that exceed tote dimensions in all orientations
 }
 
 /**
@@ -97,14 +98,35 @@ export function packOrdersIntoTotesAndCarts(
 ): PackingResult {
   const orders = ordersInput.map(o => ({ ...o, assigned_tote_ids: [] as string[] }));
   const totes: Tote[] = [];
+  const unpackableItems: LineItem[] = [];
   let toteSeq = 1;
   let splitCount = 0;
+
+  // P0 FIX: Filter out individually unpackable items BEFORE packing.
+  // An item that exceeds tote dimensions in all orientations cannot be placed in any tote.
+  for (const order of orders) {
+    const packable: LineItem[] = [];
+    for (const item of order.items) {
+      if (!item.fits_tote_bounds && item.length_in > 0 && item.width_in > 0 && item.height_in > 0) {
+        unpackableItems.push(item);
+      } else {
+        packable.push(item);
+      }
+    }
+    // Update order's items to only packable ones; recalculate totals
+    order.items = packable;
+    order.total_weight_lb = Math.round(packable.reduce((s, i) => s + i.weight_lb, 0) * 100) / 100;
+    order.total_volume_cuin = Math.round(packable.reduce((s, i) => s + i.volume_cuin, 0) * 10) / 10;
+    order.total_volume_cuft = Math.round((order.total_volume_cuin / 1728) * 100) / 100;
+    order.item_count = packable.length;
+  }
 
   // Separate oversized orders (requiring split) from standard single-tote orders
   const oversizedOrders: HouseholdOrder[] = [];
   const standardOrders: HouseholdOrder[] = [];
 
   for (const order of orders) {
+    if (order.items.length === 0) continue; // skip orders with no packable items
     if (order.total_volume_cuin > config.toteUsableVolumeCuIn || order.total_weight_lb > config.toteMaxWeightLb) {
       oversizedOrders.push(order);
     } else {
@@ -335,5 +357,6 @@ export function packOrdersIntoTotesAndCarts(
     totes,
     carts,
     splitOrdersCount: splitCount,
+    unpackableItems,
   };
 }

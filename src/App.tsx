@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { PlanState, OrderStatus, PlanConfig } from './lib/types';
 import { parseOrdersCsv } from './lib/importCsv';
 import { buildPlanFromItems, moveToteToCart, updateOrderStatus } from './lib/buildPlan';
+import { DepartureScheduleDef } from './lib/flightPlanning';
 import { Header } from './components/Header';
 import { OrderEntryTab } from './components/tabs/OrderEntryTab';
 import { OrderPickingTab } from './components/tabs/OrderPickingTab';
@@ -48,10 +49,10 @@ export const App: React.FC = () => {
     loadDataset('stage1');
   }, []);
 
-  const handleApplyCustomCsv = (csvText: string) => {
+  const handleApplyCustomCsv = (csvText: string, schedules?: DepartureScheduleDef[]) => {
     const parseResult = parseOrdersCsv(csvText);
     if (parseResult.success && parseResult.items.length > 0) {
-      const plan = buildPlanFromItems(parseResult.items, 'custom');
+      const plan = buildPlanFromItems(parseResult.items, 'custom', undefined, schedules);
       setPlanState(plan);
     }
   };

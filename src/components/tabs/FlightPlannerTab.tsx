@@ -368,15 +368,15 @@ export const FlightPlannerTab: React.FC<FlightPlannerTabProps> = ({ state }) => 
         </div>
       )}
 
-      {/* Official Flight Manifest (Print Ready) */}
+      {/* Proposed Flight Manifest (Print Ready) */}
       <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
         <div className="p-4 border-b border-slate-200 flex items-center justify-between">
           <div>
             <h3 className="font-bold text-slate-900 text-sm font-mono">
-              Official Cargo Flight Manifest: {selectedDep.departure_id}
+              Proposed Cargo Flight Manifest: {selectedDep.departure_id}
             </h3>
             <p className="text-xs text-slate-400 mt-0.5">
-              Verified load sheet for Superstore Retailer, Nakina Ground Driver, and Wilderness North Pilot.
+              Draft load sheet — requires pilot and ground crew verification before dispatch.
             </p>
           </div>
           <button

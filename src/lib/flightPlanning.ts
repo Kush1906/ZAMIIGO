@@ -48,9 +48,54 @@ export const STAGE_2_FLIGHTS: DepartureScheduleDef[] = [
 ];
 
 /**
+ * Parses a flight capacity CSV into DepartureScheduleDef[].
+ * Expected columns: departure_id, departure_date, available_totes, available_payload_lb, available_volume_cuft
+ */
+export function parseFlightCapacityCsv(csvText: string): DepartureScheduleDef[] {
+  const lines = csvText.trim().split('\n').map(l => l.trim()).filter(l => l.length > 0);
+  if (lines.length < 2) return [];
+
+  const header = lines[0].toLowerCase().split(',').map(h => h.trim());
+  const idxId = header.findIndex(h => h.includes('departure_id') || h === 'id');
+  const idxDate = header.findIndex(h => h.includes('departure_date') || h === 'date');
+  const idxTotes = header.findIndex(h => h.includes('available_totes') || h === 'totes');
+  const idxPayload = header.findIndex(h => h.includes('available_payload_lb') || h.includes('payload'));
+  const idxVolume = header.findIndex(h => h.includes('available_volume_cuft') || h.includes('volume'));
+
+  if (idxDate === -1 || idxTotes === -1 || idxPayload === -1 || idxVolume === -1) return [];
+
+  const schedules: DepartureScheduleDef[] = [];
+  for (let i = 1; i < lines.length; i++) {
+    const cols = lines[i].split(',').map(c => c.trim());
+    const rawId = idxId >= 0 ? cols[idxId] : String(i);
+    const depId = rawId.startsWith('DEP') ? rawId : `DEP-${String(rawId).padStart(2, '0')}`;
+
+    const totes = parseInt(cols[idxTotes], 10);
+    const payload = parseFloat(cols[idxPayload]);
+    const volume = parseFloat(cols[idxVolume]);
+
+    if (isNaN(totes) || isNaN(payload) || isNaN(volume)) continue;
+
+    schedules.push({
+      departure_id: depId,
+      departure_date: cols[idxDate] || `2026-06-0${i + 3}`,
+      destination: 'Webequie (CYWP)',
+      available_totes: totes,
+      available_payload_lb: payload,
+      available_volume_cuft: volume,
+    });
+  }
+
+  return schedules;
+}
+
+/**
  * Plans flight loading across scheduled departures.
- * Deterministically assigns complete orders and their totes.
- * Tracks payload, volume, tote count, binding constraints, and rollovers.
+ *
+ * KEY INVARIANT: Assigns **complete household orders** atomically.
+ * All totes belonging to an order group travel on the same departure.
+ * An order is only eligible for a departure if its order_date <= departure_date.
+ * If the full order group doesn't fit, the entire group rolls to the next departure.
  */
 export function planFlightDepartures(
   orders: HouseholdOrder[],
@@ -70,27 +115,131 @@ export function planFlightDepartures(
     assigned_flight_id: undefined as string | undefined,
   }));
 
-  // Group totes by their primary order date (earliest order date in tote)
-  const getToteDate = (t: Tote): string => {
-    let earliest = '9999-99-99';
-    for (const ordId of t.assigned_order_ids) {
-      const ord = updatedOrders.find(o => o.order_id === ordId);
-      if (ord && ord.order_date < earliest) earliest = ord.order_date;
+  // Build a lookup: orderId -> list of totes that carry items from that order
+  const orderToTotes = new Map<string, Tote[]>();
+  for (const tote of updatedTotes) {
+    for (const ordId of tote.assigned_order_ids) {
+      if (!orderToTotes.has(ordId)) orderToTotes.set(ordId, []);
+      orderToTotes.get(ordId)!.push(tote);
     }
-    return earliest === '9999-99-99' ? '2026-06-01' : earliest;
-  };
+  }
 
-  const departures: FlightDeparture[] = [];
-  const assignedToteIds = new Set<string>();
-  const assignedOrderIds = new Set<string>();
+  // Build order groups: a group is a set of orders that share at least one tote.
+  // All orders and their totes in a group must travel together.
+  const orderIdToGroup = new Map<string, number>();
+  let nextGroupId = 0;
 
-  // Queue of unassigned totes
-  let pendingTotes: Tote[] = [...updatedTotes].sort((a, b) => {
-    const dateA = getToteDate(a);
-    const dateB = getToteDate(b);
-    if (dateA !== dateB) return dateA.localeCompare(dateB);
-    return a.tote_code.localeCompare(b.tote_code);
+  function findGroupRoot(gid: number, parents: Map<number, number>): number {
+    while (parents.has(gid) && parents.get(gid) !== gid) {
+      gid = parents.get(gid)!;
+    }
+    return gid;
+  }
+
+  const groupParents = new Map<number, number>();
+
+  for (const tote of updatedTotes) {
+    if (tote.assigned_order_ids.length === 0) continue;
+
+    // Ensure all orders in this tote belong to the same group
+    let mergedGroup: number | null = null;
+    for (const ordId of tote.assigned_order_ids) {
+      if (orderIdToGroup.has(ordId)) {
+        const existingGroup = findGroupRoot(orderIdToGroup.get(ordId)!, groupParents);
+        if (mergedGroup === null) {
+          mergedGroup = existingGroup;
+        } else if (mergedGroup !== existingGroup) {
+          // Merge groups
+          groupParents.set(existingGroup, mergedGroup);
+        }
+      }
+    }
+
+    if (mergedGroup === null) {
+      mergedGroup = nextGroupId++;
+      groupParents.set(mergedGroup, mergedGroup);
+    }
+
+    for (const ordId of tote.assigned_order_ids) {
+      orderIdToGroup.set(ordId, mergedGroup);
+    }
+  }
+
+  // Also ensure any order whose totes span multiple groups gets merged
+  for (const order of updatedOrders) {
+    if (!orderIdToGroup.has(order.order_id)) {
+      // Order with no totes (unpackable) — skip flight assignment
+      continue;
+    }
+  }
+
+  // Collect groups
+  interface OrderGroup {
+    groupId: number;
+    orders: HouseholdOrder[];
+    totes: Tote[];
+    totalWeightLb: number;
+    totalVolumeCuFt: number;
+    totalTotes: number;
+    earliestOrderDate: string;
+    latestOrderDate: string;
+  }
+
+  const groupMap = new Map<number, OrderGroup>();
+
+  for (const order of updatedOrders) {
+    if (!orderIdToGroup.has(order.order_id)) continue;
+    const gid = findGroupRoot(orderIdToGroup.get(order.order_id)!, groupParents);
+    orderIdToGroup.set(order.order_id, gid); // path compress
+
+    if (!groupMap.has(gid)) {
+      groupMap.set(gid, {
+        groupId: gid,
+        orders: [],
+        totes: [],
+        totalWeightLb: 0,
+        totalVolumeCuFt: 0,
+        totalTotes: 0,
+        earliestOrderDate: '9999-99-99',
+        latestOrderDate: '0000-00-00',
+      });
+    }
+    groupMap.get(gid)!.orders.push(order);
+    if (order.order_date < groupMap.get(gid)!.earliestOrderDate) {
+      groupMap.get(gid)!.earliestOrderDate = order.order_date;
+    }
+    if (order.order_date > groupMap.get(gid)!.latestOrderDate) {
+      groupMap.get(gid)!.latestOrderDate = order.order_date;
+    }
+  }
+
+  // Add totes to their groups (deduplicated)
+  const toteAssignedToGroup = new Set<string>();
+  for (const tote of updatedTotes) {
+    if (tote.assigned_order_ids.length === 0) continue;
+    const firstOrd = tote.assigned_order_ids[0];
+    if (!orderIdToGroup.has(firstOrd)) continue;
+    const gid = findGroupRoot(orderIdToGroup.get(firstOrd)!, groupParents);
+    if (toteAssignedToGroup.has(tote.tote_id)) continue;
+    toteAssignedToGroup.add(tote.tote_id);
+
+    const group = groupMap.get(gid)!;
+    group.totes.push(tote);
+    group.totalWeightLb += tote.total_weight_lb;
+    group.totalVolumeCuFt += tote.total_volume_cuin / 1728;
+    group.totalTotes += 1;
+  }
+
+  // Sort groups: earliest order date first, then by group size (smaller first for better packing)
+  const sortedGroups = Array.from(groupMap.values()).sort((a, b) => {
+    if (a.earliestOrderDate !== b.earliestOrderDate) return a.earliestOrderDate.localeCompare(b.earliestOrderDate);
+    return a.totalTotes - b.totalTotes;
   });
+
+  // Assign groups to departures
+  const departures: FlightDeparture[] = [];
+  const assignedGroupIds = new Set<number>();
+  let pendingGroups = [...sortedGroups];
 
   for (let sIdx = 0; sIdx < schedules.length; sIdx++) {
     const sched = schedules[sIdx];
@@ -103,63 +252,61 @@ export function planFlightDepartures(
     let currentPayloadLb = 0;
     let currentVolCuFt = 0;
 
-    // Filter totes that are ready by this departure date (order_date <= depDate) and not yet assigned
-    const eligibleTotes: Tote[] = [];
-    const futureTotes: Tote[] = [];
+    const eligibleGroups: OrderGroup[] = [];
+    const futureGroups: OrderGroup[] = [];
 
-    for (const t of pendingTotes) {
-      const tDate = getToteDate(t);
-      if (tDate <= depDate) {
-        eligibleTotes.push(t);
+    for (const group of pendingGroups) {
+      // A group is eligible if ALL its orders have order_date <= departure_date
+      const allOrdersEligible = group.orders.every(o => o.order_date <= depDate);
+      if (allOrdersEligible) {
+        eligibleGroups.push(group);
       } else {
-        futureTotes.push(t);
+        futureGroups.push(group);
       }
     }
 
-    const unplacedFromEligible: Tote[] = [];
+    const unplacedFromEligible: OrderGroup[] = [];
 
-    for (const tote of eligibleTotes) {
-      const toteVolCuFt = tote.total_volume_cuin / 1728;
-      const canFitTote = (depToteIds.length + 1) <= sched.available_totes;
-      const canFitWeight = (currentPayloadLb + tote.total_weight_lb) <= sched.available_payload_lb;
-      const canFitVol = (currentVolCuFt + toteVolCuFt) <= sched.available_volume_cuft;
+    for (const group of eligibleGroups) {
+      // Check if the ENTIRE group fits atomically
+      const canFitTotes = (depToteIds.length + group.totalTotes) <= sched.available_totes;
+      const canFitWeight = (currentPayloadLb + group.totalWeightLb) <= sched.available_payload_lb;
+      const canFitVol = (currentVolCuFt + group.totalVolumeCuFt) <= sched.available_volume_cuft;
 
-      if (canFitTote && canFitWeight && canFitVol) {
-        depToteIds.push(tote.tote_id);
-        currentPayloadLb += tote.total_weight_lb;
-        currentVolCuFt += toteVolCuFt;
-        tote.assigned_flight_id = sched.departure_id;
-        assignedToteIds.add(tote.tote_id);
-
-        for (const ordId of tote.assigned_order_ids) {
-          if (!depOrderIds.includes(ordId)) {
-            depOrderIds.push(ordId);
-            assignedOrderIds.add(ordId);
-            const ord = updatedOrders.find(o => o.order_id === ordId);
-            if (ord) ord.assigned_flight_id = sched.departure_id;
-          }
+      if (canFitTotes && canFitWeight && canFitVol) {
+        // Assign entire group to this departure
+        for (const tote of group.totes) {
+          depToteIds.push(tote.tote_id);
+          tote.assigned_flight_id = sched.departure_id;
         }
+        currentPayloadLb += group.totalWeightLb;
+        currentVolCuFt += group.totalVolumeCuFt;
+
+        for (const order of group.orders) {
+          depOrderIds.push(order.order_id);
+          order.assigned_flight_id = sched.departure_id;
+        }
+        assignedGroupIds.add(group.groupId);
       } else {
-        unplacedFromEligible.push(tote);
+        // Entire group rolls over — do NOT split it
+        unplacedFromEligible.push(group);
+
         let failReason = 'Aircraft capacity limit reached';
-        if (!canFitTote) failReason = `Exceeded flight tote slot limit (${sched.available_totes} totes)`;
+        if (!canFitTotes) failReason = `Exceeded flight tote slot limit (${sched.available_totes} totes)`;
         else if (!canFitWeight) failReason = `Exceeded allowable flight payload (${sched.available_payload_lb} lb)`;
         else if (!canFitVol) failReason = `Exceeded flight cargo volume (${sched.available_volume_cuft} cu ft)`;
 
-        for (const ordId of tote.assigned_order_ids) {
-          if (!depOrderIds.includes(ordId) && !rolledOverOrderIds.includes(ordId)) {
-            rolledOverOrderIds.push(ordId);
-            const ord = updatedOrders.find(o => o.order_id === ordId);
-            if (ord && sIdx < schedules.length - 1) {
-              ord.is_rolled_over = true;
-              ord.rollover_reason = `Rolled over from ${sched.departure_id} (${sched.departure_date}): ${failReason}`;
-            }
+        for (const order of group.orders) {
+          if (sIdx < schedules.length - 1) {
+            order.is_rolled_over = true;
+            order.rollover_reason = `Rolled over from ${sched.departure_id} (${sched.departure_date}): ${failReason}`;
           }
+          rolledOverOrderIds.push(order.order_id);
         }
       }
     }
 
-    // Determine binding constraint for this departure
+    // Compute utilization stats
     const totePct = sched.available_totes > 0 ? (depToteIds.length / sched.available_totes) * 100 : 0;
     const payloadPct = sched.available_payload_lb > 0 ? (currentPayloadLb / sched.available_payload_lb) * 100 : 0;
     const volPct = sched.available_volume_cuft > 0 ? (currentVolCuFt / sched.available_volume_cuft) * 100 : 0;
@@ -194,18 +341,17 @@ export function planFlightDepartures(
       rolled_over_order_ids: rolledOverOrderIds,
     });
 
-    // Unplaced eligible totes roll over to next departure alongside future totes
-    pendingTotes = [...unplacedFromEligible, ...futureTotes];
+    // Unplaced eligible groups roll over alongside future groups
+    pendingGroups = [...unplacedFromEligible, ...futureGroups];
   }
 
-  // Any remaining totes after all scheduled departures
-  if (pendingTotes.length > 0) {
-    for (const t of pendingTotes) {
-      for (const ordId of t.assigned_order_ids) {
-        const ord = updatedOrders.find(o => o.order_id === ordId);
-        if (ord && !ord.assigned_flight_id) {
-          ord.is_rolled_over = true;
-          ord.rollover_reason = 'Pending next scheduled charter flight';
+  // Any remaining groups after all scheduled departures
+  if (pendingGroups.length > 0) {
+    for (const group of pendingGroups) {
+      for (const order of group.orders) {
+        if (!order.assigned_flight_id) {
+          order.is_rolled_over = true;
+          order.rollover_reason = 'Pending next scheduled charter flight';
         }
       }
     }

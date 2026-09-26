@@ -1,6 +1,6 @@
 import { LineItem, PlanConfig, PlanState, OrderStatus } from './types';
 import { DEFAULT_PLAN_CONFIG, groupItemsIntoOrders, packOrdersIntoTotesAndCarts } from './packing';
-import { planFlightDepartures, STAGE_1_FLIGHT, STAGE_2_FLIGHTS, DepartureScheduleDef } from './flightPlanning';
+import { planFlightDepartures, STAGE_1_FLIGHT, STAGE_2_FLIGHTS, DepartureScheduleDef, parseFlightCapacityCsv } from './flightPlanning';
 import { validatePlan } from './validatePlan';
 
 export function buildPlanFromItems(
@@ -18,12 +18,26 @@ export function buildPlanFromItems(
   const packingResult = packOrdersIntoTotesAndCarts(rawOrders, config);
 
   // 3. Determine flight schedule based on stage
-  let schedules = stage === 'stage2' ? STAGE_2_FLIGHTS : STAGE_1_FLIGHT;
+  let schedules: DepartureScheduleDef[];
   if (customSchedules && customSchedules.length > 0) {
     schedules = customSchedules;
+  } else if (stage === 'stage2') {
+    schedules = STAGE_2_FLIGHTS;
+  } else if (stage === 'custom') {
+    // For custom uploads without explicit schedules, detect multi-day by looking at
+    // distinct order dates. If there are multiple dates spanning >1 day, use Stage 2
+    // schedule as default; otherwise use Stage 1 single flight.
+    const dates = new Set(items.map(i => i.order_date));
+    if (dates.size > 1) {
+      schedules = STAGE_2_FLIGHTS;
+    } else {
+      schedules = STAGE_1_FLIGHT;
+    }
+  } else {
+    schedules = STAGE_1_FLIGHT;
   }
 
-  // 4. Plan flight loads & rollovers
+  // 4. Plan flight loads & rollovers (whole-order atomic assignment)
   const flightResult = planFlightDepartures(packingResult.orders, packingResult.totes, schedules, config);
 
   // 5. Construct draft plan state
@@ -42,11 +56,22 @@ export function buildPlanFromItems(
   // 6. Run live validation checks across all tabs
   draftState.issues = validatePlan(draftState);
 
+  // Add warnings for unpackable items
+  if (packingResult.unpackableItems.length > 0) {
+    draftState.issues.push({
+      type: 'WARNING',
+      code: 'UNPACKABLE_ITEMS',
+      message: `${packingResult.unpackableItems.length} item(s) exceed tote dimensions in all orientations and could not be packed. These items require special handling.`,
+      tabTarget: 'picking',
+    });
+  }
+
   return draftState;
 }
 
 /**
- * Revalidates and updates state after a manual tote move to a different cart
+ * Revalidates and updates state after a manual tote move to a different cart.
+ * P1 FIX: Validates that split-order totes remain on the same cart BEFORE committing.
  */
 export function moveToteToCart(state: PlanState, toteId: string, targetCartId: string): { newState: PlanState; error?: string } {
   const tote = state.totes.find(t => t.tote_id === toteId);
@@ -64,6 +89,25 @@ export function moveToteToCart(state: PlanState, toteId: string, targetCartId: s
       newState: state,
       error: `Cannot move tote: Cart ${targetCart.cart_code} is already at maximum capacity (${state.config.maxTotesPerCart} totes).`
     };
+  }
+
+  // P1 FIX: Check if moving this tote would separate a split order across carts.
+  // All totes belonging to the same order MUST stay on the same cart.
+  for (const orderId of tote.assigned_order_ids) {
+    const order = state.orders.find(o => o.order_id === orderId);
+    if (!order) continue;
+
+    // Find all sibling totes for this order
+    for (const siblingToteId of order.assigned_tote_ids) {
+      if (siblingToteId === toteId) continue; // skip the tote we're moving
+      const siblingTote = state.totes.find(t => t.tote_id === siblingToteId);
+      if (siblingTote && siblingTote.assigned_cart_id !== targetCartId) {
+        return {
+          newState: state,
+          error: `Cannot move tote: Order #${orderId} (Household #${order.household_id}) has split totes. Tote ${siblingTote.tote_code} is on ${siblingTote.assigned_cart_id}. All totes for an order must stay on the same cart.`
+        };
+      }
+    }
   }
 
   // Clone and apply
@@ -125,3 +169,6 @@ export function updateOrderStatus(state: PlanState, orderId: string, status: Ord
     lastUpdated: Date.now(),
   };
 }
+
+// Re-export for convenience
+export { parseFlightCapacityCsv };

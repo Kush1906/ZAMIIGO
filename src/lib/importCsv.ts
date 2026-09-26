@@ -8,6 +8,7 @@ export interface ParseResult {
   items: LineItem[];
   errors: string[];
   warnings: string[];
+  rejectedRows: { rowNum: number; reason: string }[];
   stats: {
     rowCount: number;
     orderCount: number;
@@ -15,6 +16,7 @@ export interface ParseResult {
     totalWeightLb: number;
     totalVolumeCuFt: number;
     oversizedItemCount: number;
+    rejectedRowCount: number;
   };
 }
 
@@ -28,6 +30,7 @@ export function parseOrdersCsv(csvText: string): ParseResult {
   const errors: string[] = [];
   const warnings: string[] = [];
   const items: LineItem[] = [];
+  const rejectedRows: { rowNum: number; reason: string }[] = [];
 
   if (result.errors && result.errors.length > 0) {
     result.errors.forEach(err => {
@@ -41,7 +44,8 @@ export function parseOrdersCsv(csvText: string): ParseResult {
       items: [],
       errors: ['The uploaded CSV file contains no data rows.'],
       warnings: [],
-      stats: { rowCount: 0, orderCount: 0, householdCount: 0, totalWeightLb: 0, totalVolumeCuFt: 0, oversizedItemCount: 0 }
+      rejectedRows: [],
+      stats: { rowCount: 0, orderCount: 0, householdCount: 0, totalWeightLb: 0, totalVolumeCuFt: 0, oversizedItemCount: 0, rejectedRowCount: 0 }
     };
   }
 
@@ -75,7 +79,8 @@ export function parseOrdersCsv(csvText: string): ParseResult {
       items: [],
       errors: [`Missing required CSV columns: ${missingCols.join(', ')}. Found columns: ${Object.keys(sampleRow).join(', ')}`],
       warnings: [],
-      stats: { rowCount: 0, orderCount: 0, householdCount: 0, totalWeightLb: 0, totalVolumeCuFt: 0, oversizedItemCount: 0 }
+      rejectedRows: [],
+      stats: { rowCount: 0, orderCount: 0, householdCount: 0, totalWeightLb: 0, totalVolumeCuFt: 0, oversizedItemCount: 0, rejectedRowCount: 0 }
     };
   }
 
@@ -90,29 +95,48 @@ export function parseOrdersCsv(csvText: string): ParseResult {
     const orderId = String(row[colOrderId!] ?? '').trim();
     const householdId = String(row[colHouseholdId!] ?? '').trim();
 
+    // P0 FIX: Reject rows with missing IDs instead of silently skipping
     if (!orderId || !householdId) {
-      warnings.push(`Row ${rowNum}: Skipped row with empty order_id or household_id.`);
+      rejectedRows.push({ rowNum, reason: 'Missing order_id or household_id' });
       return;
     }
 
-    const weightLb = parseFloat(row[colWeight!]) || 0;
-    const lengthIn = colLength ? parseFloat(row[colLength]) || 0 : 0;
-    const widthIn = colWidth ? parseFloat(row[colWidth]) || 0 : 0;
-    const heightIn = colHeight ? parseFloat(row[colHeight]) || 0 : 0;
+    // P0 FIX: Validate numeric fields strictly — reject invalid, don't coerce to 0
+    const rawWeight = row[colWeight!];
+    const weightLb = parseFloat(rawWeight);
+    if (isNaN(weightLb) || weightLb < 0) {
+      rejectedRows.push({ rowNum, reason: `Invalid weight_lb value: "${rawWeight}"` });
+      return;
+    }
+
+    let lengthIn = 0, widthIn = 0, heightIn = 0;
+    if (colLength && colWidth && colHeight) {
+      const rawL = row[colLength], rawW = row[colWidth], rawH = row[colHeight];
+      lengthIn = parseFloat(rawL);
+      widthIn = parseFloat(rawW);
+      heightIn = parseFloat(rawH);
+
+      if (isNaN(lengthIn) || isNaN(widthIn) || isNaN(heightIn) || lengthIn < 0 || widthIn < 0 || heightIn < 0) {
+        rejectedRows.push({ rowNum, reason: `Invalid dimensions: L="${rawL}" W="${rawW}" H="${rawH}"` });
+        return;
+      }
+    }
 
     const volumeCuIn = lengthIn * widthIn * heightIn;
     const volumeCuFt = volumeCuIn / 1728;
 
     // Check orientation fit inside tote (23.5 x 14.0 x 11.0 in)
     const itemDimsSorted = [lengthIn, widthIn, heightIn].sort((a, b) => b - a);
-    const fitsToteBounds = itemDimsSorted[0] <= DEFAULT_TOTE_DIMS[0] &&
-                           itemDimsSorted[1] <= DEFAULT_TOTE_DIMS[1] &&
-                           itemDimsSorted[2] <= DEFAULT_TOTE_DIMS[2];
+    const fitsToteBounds = (lengthIn === 0 && widthIn === 0 && heightIn === 0) || (
+      itemDimsSorted[0] <= DEFAULT_TOTE_DIMS[0] &&
+      itemDimsSorted[1] <= DEFAULT_TOTE_DIMS[1] &&
+      itemDimsSorted[2] <= DEFAULT_TOTE_DIMS[2]
+    );
 
-    if (!fitsToteBounds && (lengthIn > 0 && widthIn > 0 && heightIn > 0)) {
+    if (!fitsToteBounds) {
       oversizedItems++;
       if (oversizedItems <= 5) {
-        warnings.push(`Row ${rowNum} (${row[colProdName!] || 'Item'}): Dimensions ${lengthIn}"x${widthIn}"x${heightIn}" exceed tote inner envelope (${DEFAULT_TOTE_DIMS.join('"x')}") in all orientations.`);
+        warnings.push(`Row ${rowNum} (${row[colProdName!] || 'Item'}): Dimensions ${lengthIn}"x${widthIn}"x${heightIn}" exceed tote inner envelope (${DEFAULT_TOTE_DIMS.join('"x')}\") in all orientations. Item will be flagged as individually unpackable.`);
       }
     }
 
@@ -141,11 +165,25 @@ export function parseOrdersCsv(csvText: string): ParseResult {
     totalVolumeCuIn += volumeCuIn;
   });
 
+  // Surface rejected rows as visible warnings
+  if (rejectedRows.length > 0) {
+    warnings.push(`${rejectedRows.length} row(s) rejected due to invalid or missing data.`);
+    for (const rr of rejectedRows.slice(0, 5)) {
+      warnings.push(`  Row ${rr.rowNum}: ${rr.reason}`);
+    }
+    if (rejectedRows.length > 5) {
+      warnings.push(`  ... and ${rejectedRows.length - 5} more rejected rows.`);
+    }
+  }
+
   return {
-    success: errors.length === 0,
+    success: errors.length === 0 && items.length > 0,
     items,
-    errors,
+    errors: items.length === 0 && errors.length === 0
+      ? ['All rows were rejected. No valid items could be parsed.']
+      : errors,
     warnings,
+    rejectedRows,
     stats: {
       rowCount: items.length,
       orderCount: uniqueOrders.size,
@@ -153,6 +191,7 @@ export function parseOrdersCsv(csvText: string): ParseResult {
       totalWeightLb: Math.round(totalWeight * 10) / 10,
       totalVolumeCuFt: Math.round((totalVolumeCuIn / 1728) * 10) / 10,
       oversizedItemCount: oversizedItems,
+      rejectedRowCount: rejectedRows.length,
     }
   };
 }
