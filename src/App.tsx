@@ -22,9 +22,12 @@ export const App: React.FC = () => {
   const [isHandheldOpen, setIsHandheldOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
+  const [customSchedules, setCustomSchedules] = useState<DepartureScheduleDef[] | undefined>();
+
   // Load dataset
   const loadDataset = async (stage: 'stage1' | 'stage2') => {
     setLoading(true);
+    setCustomSchedules(undefined);
     try {
       const csvPath = stage === 'stage1' ? '/data/stage1_orders.csv' : '/data/stage2_orders.csv';
       const response = await fetch(csvPath);
@@ -50,6 +53,7 @@ export const App: React.FC = () => {
   }, []);
 
   const handleApplyCustomCsv = (csvText: string, schedules?: DepartureScheduleDef[]) => {
+    setCustomSchedules(schedules);
     const parseResult = parseOrdersCsv(csvText);
     if (parseResult.success && parseResult.items.length > 0) {
       const plan = buildPlanFromItems(parseResult.items, 'custom', undefined, schedules);
@@ -76,7 +80,12 @@ export const App: React.FC = () => {
   const handleUpdateConfig = (newConfigPartial: Partial<PlanConfig>) => {
     if (!planState) return;
     const mergedConfig = { ...planState.config, ...newConfigPartial };
-    const rebuilt = buildPlanFromItems(planState.rawItems, planState.activeStage, mergedConfig);
+    const rebuilt = buildPlanFromItems(
+      planState.rawItems,
+      planState.activeStage,
+      mergedConfig,
+      planState.activeStage === 'custom' ? customSchedules : undefined
+    );
     setPlanState(rebuilt);
   };
 

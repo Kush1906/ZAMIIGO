@@ -113,6 +113,36 @@ export const FlightPlannerTab: React.FC<FlightPlannerTabProps> = ({ state }) => 
         </div>
       </div>
 
+      {/* Custom Schedule Notice Banner */}
+      {state.customScheduleError && (
+        <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4 flex items-start space-x-3 text-xs text-amber-800">
+          <AlertTriangle className="h-5 w-5 text-amber-600 shrink-0 mt-0.5" />
+          <div className="space-y-1">
+            <strong className="font-semibold text-amber-900 font-mono">Custom Schedule Configuration Notice</strong>
+            <p className="text-amber-700 leading-relaxed">{state.customScheduleError}</p>
+          </div>
+        </div>
+      )}
+
+      {/* Unscheduled Orders Banner (Orders exceeding all available departures) */}
+      {(() => {
+        const unassignedOrders = state.orders.filter(o => !o.assigned_flight_id);
+        if (unassignedOrders.length === 0) return null;
+        return (
+          <div className="bg-rose-50 border border-rose-200 rounded-2xl p-4 flex items-start space-x-3 text-xs text-rose-800">
+            <AlertTriangle className="h-5 w-5 text-rose-600 shrink-0 mt-0.5" />
+            <div className="space-y-1">
+              <strong className="font-semibold text-rose-900 font-mono">
+                {unassignedOrders.length} Household Order{unassignedOrders.length > 1 ? 's' : ''} Awaiting Charter Flight
+              </strong>
+              <p className="text-rose-700 leading-relaxed">
+                These orders could not be accommodated across the scheduled flight departures due to binding payload or tote constraints. They are preserved in the order ledger with status &quot;Awaiting future charter&quot;.
+              </p>
+            </div>
+          </div>
+        );
+      })()}
+
       {/* Flight Capacity KPIs & Binding Constraint Analysis */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         {/* Payload KPI */}

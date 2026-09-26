@@ -75,9 +75,16 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
 
               <div className="space-y-1">
                 <label className="text-xs text-slate-700 font-medium">Tote Safety Weight Limit</label>
-                <div className="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-700 font-mono">
-                  {config.toteMaxWeightLb} lb
-                </div>
+                <select
+                  value={config.toteMaxWeightLb}
+                  onChange={e => onUpdateConfig({ toteMaxWeightLb: parseFloat(e.target.value) })}
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 focus:outline-none focus:ring-1 focus:ring-zamiigo-teal"
+                >
+                  <option value={40}>40 lb (Ergonomic Low)</option>
+                  <option value={50}>50 lb (Standard Operational Limit)</option>
+                  <option value={60}>60 lb (Heavy Duty)</option>
+                  <option value={70}>70 lb (Structural Max)</option>
+                </select>
                 <p className="text-[10px] text-slate-400">Max operating limit before ergonomic / structural split.</p>
               </div>
 

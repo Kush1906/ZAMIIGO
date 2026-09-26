@@ -108,6 +108,49 @@ export const OrderEntryTab: React.FC<OrderEntryTabProps> = ({ state, onUpdateSta
         </div>
       </div>
 
+      {/* Unpackable Items Alert Banner (Items exceeding tote dimensions / weight) */}
+      {state.unpackableItems && state.unpackableItems.length > 0 && (
+        <div className="bg-rose-50 border border-rose-200 rounded-2xl p-5 shadow-sm space-y-3">
+          <div className="flex items-center space-x-2 text-rose-800">
+            <AlertCircle className="h-5 w-5 text-rose-600 shrink-0" />
+            <h3 className="font-bold text-sm font-mono">
+              Oversized / Unpackable Cargo Alert ({state.unpackableItems.length} item{state.unpackableItems.length > 1 ? 's' : ''})
+            </h3>
+          </div>
+          <p className="text-xs text-rose-700">
+            The following items cannot be packed into standard returnable totes because they exceed the tote physical envelope (23.5&quot; × 14.0&quot; × 11.0&quot;) or the single-item weight threshold ({state.config.toteMaxWeightLb} lb). They are preserved in the order ledger but excluded from totes, requiring dedicated strapping in the Cessna 208 cargo cabin.
+          </p>
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-xs bg-white rounded-xl border border-rose-200/60 overflow-hidden">
+              <thead className="bg-rose-100/50 text-rose-900 font-mono text-[11px] uppercase tracking-wider">
+                <tr>
+                  <th className="py-2 px-3">Order / Household</th>
+                  <th className="py-2 px-3">Product Name</th>
+                  <th className="py-2 px-3">Dimensions (L × W × H)</th>
+                  <th className="py-2 px-3">Weight</th>
+                  <th className="py-2 px-3">Constraint Exceeded</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-rose-100 font-sans text-rose-800">
+                {state.unpackableItems.map((u, idx) => (
+                  <tr key={idx} className="hover:bg-rose-50/50">
+                    <td className="py-2 px-3 font-mono font-bold">
+                      HH #{u.household_id} <span className="font-normal text-slate-500">({u.order_id})</span>
+                    </td>
+                    <td className="py-2 px-3 font-medium">{u.item.product_name}</td>
+                    <td className="py-2 px-3 font-mono text-slate-600">
+                      {u.item.length_in}&quot; × {u.item.width_in}&quot; × {u.item.height_in}&quot;
+                    </td>
+                    <td className="py-2 px-3 font-mono text-slate-600">{u.item.weight_lb} lb</td>
+                    <td className="py-2 px-3 text-rose-700 font-semibold">{u.reason}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
       {/* Filter and Search Bar */}
       <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
         <div className="relative w-full sm:w-96">

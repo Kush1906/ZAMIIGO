@@ -1,4 +1,4 @@
-import { LineItem, HouseholdOrder, Tote, PickerCart, PlanConfig } from './types';
+import { LineItem, HouseholdOrder, Tote, PickerCart, PlanConfig, UnpackableItem } from './types';
 
 export const DEFAULT_PLAN_CONFIG: PlanConfig = {
   toteInnerLengthIn: 23.5,
@@ -17,11 +17,12 @@ export interface PackingResult {
   totes: Tote[];
   carts: PickerCart[];
   splitOrdersCount: number;
-  unpackableItems: LineItem[]; // Items that exceed tote dimensions in all orientations
+  unpackableItems: UnpackableItem[]; // Items that exceed tote dimensions — retained with order/household ID
 }
 
 /**
- * Group raw line items into distinct Household Orders
+ * Group raw line items into distinct Household Orders.
+ * Preserves ALL items (including those that may be unpackable) in all_items.
  */
 export function groupItemsIntoOrders(items: LineItem[], usableToteVol = 3600.0): HouseholdOrder[] {
   const orderMap = new Map<string, {
@@ -64,15 +65,19 @@ export function groupItemsIntoOrders(items: LineItem[], usableToteVol = 3600.0):
       destination_community: o.destination_community,
       order_date: o.order_date,
       batch_id: o.batch_id,
-      items: o.items,
+      items: o.items,       // will be filtered to packable-only in packing step
+      all_items: [...o.items], // always the original full list from the CSV
       total_weight_lb: Math.round(o.weight * 100) / 100,
       total_volume_cuin: Math.round(o.volume * 10) / 10,
       total_volume_cuft: Math.round((o.volume / 1728) * 100) / 100,
       item_count: o.items.length,
+      total_item_count: o.items.length,
       status: 'RETAILER_SUBMITTED',
       retailer_order_ref: `RCS-${o.household_id}-${o.order_id.slice(-4)}`,
       requires_split: reqSplit,
       assigned_tote_ids: [],
+      has_unpackable_items: false,
+      unpackable_item_count: 0,
     });
   }
 
@@ -88,37 +93,58 @@ export function groupItemsIntoOrders(items: LineItem[], usableToteVol = 3600.0):
 
 /**
  * Packs household orders into totes:
- * 1. Splits oversized orders (> 3600 cu in or > toteMaxWeightLb) into sequential part totes.
- * 2. Packs standard orders into shared totes using Best-Fit Decreasing heuristic.
- * 3. Assigns totes to carts keeping all totes for an order on the same cart.
+ * 1. Identifies individually unpackable items (exceed tote dims). Keeps them in order.all_items
+ *    but removes from packing. Marks the order with has_unpackable_items = true.
+ * 2. Splits oversized orders (> 3600 cu in or > toteMaxWeightLb) into sequential part totes.
+ * 3. Packs standard orders into shared totes using Best-Fit Decreasing heuristic.
+ * 4. Assigns totes to carts keeping all totes for an order on the same cart.
  */
 export function packOrdersIntoTotesAndCarts(
   ordersInput: HouseholdOrder[],
   config: PlanConfig = DEFAULT_PLAN_CONFIG
 ): PackingResult {
-  const orders = ordersInput.map(o => ({ ...o, assigned_tote_ids: [] as string[] }));
+  const orders = ordersInput.map(o => ({
+    ...o,
+    items: [...o.items],       // mutable copy of items
+    all_items: [...o.all_items], // preserve originals
+    assigned_tote_ids: [] as string[]
+  }));
   const totes: Tote[] = [];
-  const unpackableItems: LineItem[] = [];
+  const unpackableItems: UnpackableItem[] = [];
   let toteSeq = 1;
   let splitCount = 0;
 
-  // P0 FIX: Filter out individually unpackable items BEFORE packing.
-  // An item that exceeds tote dimensions in all orientations cannot be placed in any tote.
+  // Step 1: Separate individually unpackable items from packable items.
+  // An unpackable item is flagged as !fits_tote_bounds AND has real dimensions.
+  // IMPORTANT: We keep all_items intact; only items[] (used for packing) is filtered.
   for (const order of orders) {
     const packable: LineItem[] = [];
     for (const item of order.items) {
       if (!item.fits_tote_bounds && item.length_in > 0 && item.width_in > 0 && item.height_in > 0) {
-        unpackableItems.push(item);
+        unpackableItems.push({
+          item,
+          order_id: order.order_id,
+          household_id: order.household_id,
+          reason: `Dimensions ${item.length_in}"×${item.width_in}"×${item.height_in}" exceed tote envelope (23.5"×14"×11") in all orientations`,
+        });
       } else {
         packable.push(item);
       }
     }
-    // Update order's items to only packable ones; recalculate totals
+
+    const unpackableCount = order.items.length - packable.length;
+    if (unpackableCount > 0) {
+      order.has_unpackable_items = true;
+      order.unpackable_item_count = unpackableCount;
+    }
+
+    // Update items to packable-only; recalculate totals from packable items
     order.items = packable;
     order.total_weight_lb = Math.round(packable.reduce((s, i) => s + i.weight_lb, 0) * 100) / 100;
     order.total_volume_cuin = Math.round(packable.reduce((s, i) => s + i.volume_cuin, 0) * 10) / 10;
     order.total_volume_cuft = Math.round((order.total_volume_cuin / 1728) * 100) / 100;
     order.item_count = packable.length;
+    // total_item_count stays as the original count (all_items.length)
   }
 
   // Separate oversized orders (requiring split) from standard single-tote orders
@@ -134,7 +160,7 @@ export function packOrdersIntoTotesAndCarts(
     }
   }
 
-  // 1. Handle oversized orders: split items across multiple dedicated totes
+  // Step 2: Handle oversized orders — split items across multiple dedicated totes
   for (const order of oversizedOrders) {
     splitCount++;
     order.requires_split = true;
@@ -196,7 +222,7 @@ export function packOrdersIntoTotesAndCarts(
     });
   }
 
-  // 2. Handle standard orders: Best-Fit Decreasing packing into shared totes
+  // Step 3: Handle standard orders — Best-Fit Decreasing packing into shared totes
   standardOrders.sort((a, b) => b.total_volume_cuin - a.total_volume_cuin);
 
   interface OpenTote {
@@ -267,7 +293,7 @@ export function packOrdersIntoTotesAndCarts(
 
   totes.sort((a, b) => a.tote_code.localeCompare(b.tote_code));
 
-  // 3. Assign totes to Picker Carts
+  // Step 4: Assign totes to Picker Carts
   // CRITICAL RULE: Keep every tote for a given order on the same cart
   const carts: PickerCart[] = [];
   let cartSeq = 1;

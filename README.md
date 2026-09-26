@@ -56,7 +56,7 @@ Click **Upload CSV** in the header to import:
 - **Orders CSV** (required) — columns: `order_id`, `household_id`, `weight_lb`, `length_in`, `width_in`, `height_in`, etc.
 - **Flight Capacity CSV** (optional) — columns: `departure_id`, `departure_date`, `available_totes`, `available_payload_lb`, `available_volume_cuft`.
 
-If no capacity CSV is provided, the engine auto-detects single-day vs. multi-day based on distinct order dates.
+If no capacity CSV is provided, the engine schedules all orders into a single departure on the earliest order date with full Cessna 208 capacity, and displays a clear notice in the flight planner. For multi-departure scheduling, upload a capacity CSV alongside the orders CSV.
 
 ## Data Files (Supplied)
 
@@ -71,13 +71,13 @@ If no capacity CSV is provided, the engine auto-detects single-day vs. multi-day
 
 - **Frontend:** React + Vite + TypeScript + Tailwind CSS
 - **Backend proxy:** Vercel serverless function (`api/dispatch.ts`)
-- **Packing:** Best-Fit Decreasing on volume + weight with per-item orientation checks
-- **Flight planning:** Order-group-based atomic assignment with union-find for shared totes
+- **Packing:** Best-Fit Decreasing on volume + weight with per-item 3D orientation fit checks
+- **Flight planning:** Order-group-based atomic assignment with union-find for shared totes (no order split across flights)
 - **Validation:** Live constraint checking across tote, cart, and flight levels
 
 ### Assumptions & Limitations
 
-- **Tote weight limit (55 lb):** This is an assumed operational limit, not a challenge-supplied value. It is configurable in Settings.
+- **Tote weight limit (50 lb):** Configurable in Settings (40, 50, 60, 70 lb) to simulate different fleet / ergonomic rules.
 - **Packing is heuristic-based:** Uses BFD on summed volume with orientation fit checks per item. This is a packing *estimate*, not a collision-free 3D placement. The fill percentage is labelled as estimated.
 - **Flight manifests are proposed:** They require pilot and ground crew verification before dispatch.
 

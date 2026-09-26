@@ -17,7 +17,7 @@ export async function generateDispatchBrief(
   const dep = activeDeparture || state.departures[0];
   const totalOrders = state.orders.length;
   const totalTotes = state.totes.length;
-  const rolledOverCount = state.orders.filter(o => o.is_rolled_over).length;
+  const depRolloverCount = dep.rolled_over_order_ids?.length ?? 0;
 
   const promptContext = `
 You are the Lead Aviation Dispatcher and Operations Officer for Wilderness North / Zamiigo Cargo Operations (Nakina CYQN to Webequie CYWP).
@@ -25,10 +25,11 @@ Review the following flight load plan for Departure ${dep.departure_id} on ${dep
 - Destination: ${dep.destination} (Aircraft: Cessna 208 Caravan freighter)
 - Assigned Totes: ${dep.total_totes_count} / ${dep.available_totes} max slots (${dep.tote_utilization_pct}%)
 - Assigned Payload: ${dep.total_weight_lb} lb / ${dep.available_payload_lb} lb max payload (${dep.payload_utilization_pct}%)
-- Assigned Volume: ${dep.total_volume_cuft} cu ft / ${dep.available_volume_cuft} cu ft cargo space (${dep.volume_utilization_pct}%)
+- Assigned Volume: ${dep.totes_volume_cuft ?? dep.total_volume_cuft} cu ft / ${dep.available_volume_cuft} cu ft cargo space (${dep.volume_utilization_pct}%)
 - Binding Constraint on this flight: ${dep.binding_constraint}
-- Total Batch Orders: ${totalOrders} (${totalTotes} totes)
-- Orders Rolled Over to subsequent departures: ${rolledOverCount} orders
+- Manifest Orders on this flight: ${dep.assigned_order_ids.length} orders
+- Orders Deferred / Rolled Over on this departure: ${depRolloverCount} orders
+- Total Plan Orders: ${totalOrders} (${totalTotes} totes across plan)
 
 Write a concise, professional operational briefing with these 3 sections:
 1. Flight Status & Binding Constraint Summary (explain clearly why ${dep.binding_constraint} is the limiting factor)
@@ -75,7 +76,7 @@ Keep it direct, professional, and practical for northern bush aviation operation
 #### 1. Flight Status & Capacity Metrics
 - **Load Status:** ${dep.total_totes_count} of ${dep.available_totes} totes assigned (${dep.tote_utilization_pct}% capacity).
 - **Cargo Weight:** ${dep.total_weight_lb} lb of ${dep.available_payload_lb} lb payload (${dep.payload_utilization_pct}% utilization).
-- **Cargo Space:** ${dep.total_volume_cuft} cu ft of ${dep.available_volume_cuft} cu ft (${dep.volume_utilization_pct}% space used).
+- **Cargo Space:** ${dep.totes_volume_cuft ?? dep.total_volume_cuft} cu ft of ${dep.available_volume_cuft} cu ft (${dep.volume_utilization_pct}% space used by tote footprint).
 - **Binding Constraint:** **${dep.binding_constraint}** — ${
     dep.binding_constraint === 'TOTE_SLOTS'
       ? `Aircraft tote slot limit of ${dep.available_totes} totes has been fully reached before weight limit.`
@@ -91,7 +92,11 @@ Keep it direct, professional, and practical for northern bush aviation operation
 
 #### 3. Webequie Community Receiving & Rollover Advisory
 - **Delivered Orders:** ${dep.assigned_order_ids.length} household orders are manifest on this flight.
-- **Rollover Notice:** ${rolledOverCount} orders exceeded this flight's capacity and are scheduled for rollover to the next confirmed departure.
+- **Rollover Notice:** ${
+    depRolloverCount === 0
+      ? 'No orders deferred on this departure; all eligible household orders accommodated within payload limits.'
+      : `${depRolloverCount} orders exceeded this flight's capacity and are scheduled for rollover to subsequent departures.`
+  }
 - **Local Partner Handover:** Webequie ground coordinator should prepare returnable tote return staging upon cargo offload.
 `.trim();
 

@@ -20,17 +20,26 @@ export interface LineItem {
   fits_tote_bounds: boolean; // checks if dimensions fit inside 23.5 x 14.0 x 11.0 in any rotation
 }
 
+export interface UnpackableItem {
+  item: LineItem;
+  order_id: string;
+  household_id: string;
+  reason: string; // e.g. "Exceeds tote dimensions in all orientations"
+}
+
 export interface HouseholdOrder {
   order_id: string;
   household_id: string;
   destination_community: string;
   order_date: string;
   batch_id: string;
-  items: LineItem[];
+  items: LineItem[]; // packable items only (after unpackable filtering)
+  all_items: LineItem[]; // original complete item list from CSV
   total_weight_lb: number;
   total_volume_cuin: number;
   total_volume_cuft: number;
-  item_count: number;
+  item_count: number; // count of packable items
+  total_item_count: number; // count of all items including unpackable
   status: OrderStatus;
   retailer_order_ref: string;
   requires_split: boolean; // true if volume > tote volume (3600 cu in)
@@ -38,6 +47,8 @@ export interface HouseholdOrder {
   assigned_flight_id?: string;
   is_rolled_over?: boolean;
   rollover_reason?: string;
+  has_unpackable_items: boolean; // true if any item couldn't be packed
+  unpackable_item_count: number;
 }
 
 export interface ToteItemAllocation {
@@ -83,10 +94,11 @@ export interface FlightDeparture {
   available_volume_cuft: number;
   assigned_tote_ids: string[];
   total_weight_lb: number;
-  total_volume_cuft: number;
+  total_volume_cuft: number; // sum of item volumes in assigned totes (estimate)
+  totes_volume_cuft: number; // aircraft space occupied: assigned tote count × tote volume
   total_totes_count: number;
   payload_utilization_pct: number;
-  volume_utilization_pct: number;
+  volume_utilization_pct: number; // based on totes_volume_cuft vs available
   tote_utilization_pct: number;
   binding_constraint: 'WEIGHT' | 'SPACE' | 'TOTE_SLOTS' | 'NONE';
   is_over_capacity: boolean;
@@ -99,7 +111,7 @@ export interface PlanConfig {
   toteInnerWidthIn: number;  // 14.0
   toteInnerHeightIn: number; // 11.0
   toteUsableVolumeCuIn: number; // 3600 (~2.083 cu ft)
-  toteMaxWeightLb: number; // recommended operating max (e.g. 50 lb)
+  toteMaxWeightLb: number; // assumed operational limit (configurable)
   maxTotesPerCart: number; // default 5, configurable
   cessnaMaxTotes: number; // 90
   cessnaMaxPayloadLb: number; // 2877 (Nakina to Webequie CYQN -> CYWP)
@@ -120,8 +132,10 @@ export interface PlanState {
   totes: Tote[];
   carts: PickerCart[];
   departures: FlightDeparture[];
+  unpackableItems: UnpackableItem[]; // items that could not be packed — retained in state
   config: PlanConfig;
   issues: ValidationIssue[];
   activeStage: 'stage1' | 'stage2' | 'custom';
+  customScheduleError?: string; // set when a multi-flight custom upload lacks a capacity CSV
   lastUpdated: number;
 }

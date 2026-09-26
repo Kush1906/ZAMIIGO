@@ -68,10 +68,17 @@ export function parseOrdersCsv(csvText: string): ParseResult {
   const colOrderDate = findKey(['order_date', 'date', 'orderdate']);
   const colDest = findKey(['destination_community', 'destination', 'community']);
 
+  // Required columns check
   const missingCols: string[] = [];
   if (!colOrderId) missingCols.push('order_id');
   if (!colHouseholdId) missingCols.push('household_id');
   if (!colWeight) missingCols.push('weight_lb');
+  // All three dimension columns must be present if any one is present
+  const hasSomeDimCol = colLength || colWidth || colHeight;
+  const hasAllDimCols = colLength && colWidth && colHeight;
+  if (hasSomeDimCol && !hasAllDimCols) {
+    missingCols.push('all three dimension columns (length_in, width_in, height_in)');
+  }
 
   if (missingCols.length > 0) {
     return {
@@ -84,6 +91,8 @@ export function parseOrdersCsv(csvText: string): ParseResult {
     };
   }
 
+  const hasDimensions = !!(colLength && colWidth && colHeight);
+
   const uniqueOrders = new Set<string>();
   const uniqueHouseholds = new Set<string>();
   let totalWeight = 0;
@@ -95,29 +104,31 @@ export function parseOrdersCsv(csvText: string): ParseResult {
     const orderId = String(row[colOrderId!] ?? '').trim();
     const householdId = String(row[colHouseholdId!] ?? '').trim();
 
-    // P0 FIX: Reject rows with missing IDs instead of silently skipping
+    // Reject rows with missing IDs
     if (!orderId || !householdId) {
       rejectedRows.push({ rowNum, reason: 'Missing order_id or household_id' });
       return;
     }
 
-    // P0 FIX: Validate numeric fields strictly — reject invalid, don't coerce to 0
+    // Validate weight: must be a finite positive number
     const rawWeight = row[colWeight!];
     const weightLb = parseFloat(rawWeight);
-    if (isNaN(weightLb) || weightLb < 0) {
-      rejectedRows.push({ rowNum, reason: `Invalid weight_lb value: "${rawWeight}"` });
+    if (!isFinite(weightLb) || weightLb <= 0) {
+      rejectedRows.push({ rowNum, reason: `Invalid or non-positive weight_lb: "${rawWeight}" — must be a positive number` });
       return;
     }
 
+    // Validate dimensions: must be finite positive numbers when dimension columns exist
     let lengthIn = 0, widthIn = 0, heightIn = 0;
-    if (colLength && colWidth && colHeight) {
-      const rawL = row[colLength], rawW = row[colWidth], rawH = row[colHeight];
+    if (hasDimensions) {
+      const rawL = row[colLength!], rawW = row[colWidth!], rawH = row[colHeight!];
       lengthIn = parseFloat(rawL);
       widthIn = parseFloat(rawW);
       heightIn = parseFloat(rawH);
 
-      if (isNaN(lengthIn) || isNaN(widthIn) || isNaN(heightIn) || lengthIn < 0 || widthIn < 0 || heightIn < 0) {
-        rejectedRows.push({ rowNum, reason: `Invalid dimensions: L="${rawL}" W="${rawW}" H="${rawH}"` });
+      if (!isFinite(lengthIn) || !isFinite(widthIn) || !isFinite(heightIn) ||
+          lengthIn <= 0 || widthIn <= 0 || heightIn <= 0) {
+        rejectedRows.push({ rowNum, reason: `Invalid or non-positive dimensions: L="${rawL}" W="${rawW}" H="${rawH}" — all three must be positive numbers` });
         return;
       }
     }
@@ -126,17 +137,20 @@ export function parseOrdersCsv(csvText: string): ParseResult {
     const volumeCuFt = volumeCuIn / 1728;
 
     // Check orientation fit inside tote (23.5 x 14.0 x 11.0 in)
-    const itemDimsSorted = [lengthIn, widthIn, heightIn].sort((a, b) => b - a);
-    const fitsToteBounds = (lengthIn === 0 && widthIn === 0 && heightIn === 0) || (
-      itemDimsSorted[0] <= DEFAULT_TOTE_DIMS[0] &&
-      itemDimsSorted[1] <= DEFAULT_TOTE_DIMS[1] &&
-      itemDimsSorted[2] <= DEFAULT_TOTE_DIMS[2]
-    );
+    let fitsToteBounds = true;
+    if (hasDimensions) {
+      const itemDimsSorted = [lengthIn, widthIn, heightIn].sort((a, b) => b - a);
+      fitsToteBounds = (
+        itemDimsSorted[0] <= DEFAULT_TOTE_DIMS[0] &&
+        itemDimsSorted[1] <= DEFAULT_TOTE_DIMS[1] &&
+        itemDimsSorted[2] <= DEFAULT_TOTE_DIMS[2]
+      );
 
-    if (!fitsToteBounds) {
-      oversizedItems++;
-      if (oversizedItems <= 5) {
-        warnings.push(`Row ${rowNum} (${row[colProdName!] || 'Item'}): Dimensions ${lengthIn}"x${widthIn}"x${heightIn}" exceed tote inner envelope (${DEFAULT_TOTE_DIMS.join('"x')}\") in all orientations. Item will be flagged as individually unpackable.`);
+      if (!fitsToteBounds) {
+        oversizedItems++;
+        if (oversizedItems <= 5) {
+          warnings.push(`Row ${rowNum} (${row[colProdName!] || 'Item'}): Dimensions ${lengthIn}"x${widthIn}"x${heightIn}" exceed tote inner envelope (${DEFAULT_TOTE_DIMS.join('"x')}") in all orientations. Item will be flagged as individually unpackable.`);
+        }
       }
     }
 
@@ -165,19 +179,22 @@ export function parseOrdersCsv(csvText: string): ParseResult {
     totalVolumeCuIn += volumeCuIn;
   });
 
-  // Surface rejected rows as visible warnings
+  // Surface rejected rows as errors (blocking — not just notices)
   if (rejectedRows.length > 0) {
-    warnings.push(`${rejectedRows.length} row(s) rejected due to invalid or missing data.`);
-    for (const rr of rejectedRows.slice(0, 5)) {
-      warnings.push(`  Row ${rr.rowNum}: ${rr.reason}`);
+    errors.push(`${rejectedRows.length} row(s) rejected due to invalid data:`);
+    for (const rr of rejectedRows.slice(0, 8)) {
+      errors.push(`  Row ${rr.rowNum}: ${rr.reason}`);
     }
-    if (rejectedRows.length > 5) {
-      warnings.push(`  ... and ${rejectedRows.length - 5} more rejected rows.`);
+    if (rejectedRows.length > 8) {
+      errors.push(`  ... and ${rejectedRows.length - 8} more rejected rows.`);
     }
   }
 
+  const hasBlockingErrors = errors.length > 0;
+
   return {
-    success: errors.length === 0 && items.length > 0,
+    // success only if no blocking errors AND at least one item parsed
+    success: !hasBlockingErrors && items.length > 0,
     items,
     errors: items.length === 0 && errors.length === 0
       ? ['All rows were rejected. No valid items could be parsed.']
