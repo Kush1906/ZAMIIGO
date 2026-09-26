@@ -286,7 +286,7 @@ export const OrderEntryTab: React.FC<OrderEntryTabProps> = ({ state, onUpdateSta
                       {/* Expanded Item Breakdown with Nutrition North Advisory */}
                       {isExpanded && (
                         <tr className="bg-slate-50">
-                          <td colSpan={8} className="p-4 pl-12 border-t border-slate-200/80">
+                          <td colSpan={8} className="p-4 pl-12 border-t border-slate-200/80 animate-fade-in">
                             <div className="space-y-3">
                               <div className="flex items-center justify-between">
                                 <span className="text-xs font-bold text-slate-700 uppercase tracking-wider font-mono">

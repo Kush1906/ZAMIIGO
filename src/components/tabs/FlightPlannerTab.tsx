@@ -119,18 +119,20 @@ export const FlightPlannerTab: React.FC<FlightPlannerTabProps> = ({ state }) => 
         </div>
       </div>
 
-      {/* Custom Schedule Notice Banner */}
-      {state.customScheduleError && (
-        <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4 flex items-start space-x-3 text-xs text-amber-800">
-          <AlertTriangle className="h-5 w-5 text-amber-600 shrink-0 mt-0.5" />
-          <div className="space-y-1">
-            <strong className="font-semibold text-amber-900 font-mono">Custom Schedule Configuration Notice</strong>
-            <p className="text-amber-700 leading-relaxed">{state.customScheduleError}</p>
+      {/* Main Reactive Flight Data Area */}
+      <div key={selectedDepId} className="space-y-6 animate-fade-in">
+        {/* Custom Schedule Notice Banner */}
+        {state.customScheduleError && (
+          <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4 flex items-start space-x-3 text-xs text-amber-800 shadow-sm">
+            <AlertTriangle className="h-5 w-5 text-amber-600 shrink-0 mt-0.5" />
+            <div className="space-y-1">
+              <strong className="font-semibold text-amber-900 font-mono">Custom Schedule Configuration Notice</strong>
+              <p className="text-amber-700 leading-relaxed">{state.customScheduleError}</p>
+            </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {/* Unscheduled Orders Banner (Orders exceeding all available departures) */}
+        {/* Unscheduled Orders Banner (Orders exceeding all available departures) */}
       {(() => {
         const unassignedOrders = state.orders.filter(o => !o.assigned_flight_id);
         if (unassignedOrders.length === 0) return null;
@@ -666,6 +668,7 @@ export const FlightPlannerTab: React.FC<FlightPlannerTabProps> = ({ state }) => 
             </tfoot>
           </table>
         </div>
+      </div>
       </div>
 
     </div>

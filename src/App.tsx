@@ -10,7 +10,7 @@ import { FlightPlannerTab } from './components/tabs/FlightPlannerTab';
 import { CsvUploadModal } from './components/CsvUploadModal';
 import { HandheldPickerModal } from './components/HandheldPickerModal';
 import { SettingsModal } from './components/SettingsModal';
-import { Loader2 } from 'lucide-react';
+import { PremiumLoader } from './components/PremiumLoader';
 
 export const App: React.FC = () => {
   const [planState, setPlanState] = useState<PlanState | null>(null);
@@ -40,6 +40,9 @@ export const App: React.FC = () => {
       const parseResult = parseOrdersCsv(csvText);
 
       if (parseResult.success && parseResult.items.length > 0) {
+        // Add a cinematic delay to showcase the premium loader and simulate heavy AI computation
+        await new Promise(resolve => setTimeout(resolve, 1500));
+        
         const plan = buildPlanFromItems(parseResult.items, stage);
         setPlanState(plan);
       } else {
@@ -95,14 +98,7 @@ export const App: React.FC = () => {
   };
 
   if (loading || !planState) {
-    return (
-      <div className="min-h-screen flex flex-col items-center justify-center space-y-6">
-        <Loader2 className="h-12 w-12 text-zamiigo-amber animate-spin" />
-        <div className="text-slate-600 font-sans font-bold text-sm tracking-widest uppercase">
-          Initializing Logistics Engine...
-        </div>
-      </div>
-    );
+    return <PremiumLoader />;
   }
 
   return (
@@ -121,22 +117,24 @@ export const App: React.FC = () => {
 
       {/* Main Content Area */}
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {activeTab === 'entry' && (
-          <OrderEntryTab state={planState} onUpdateStatus={handleUpdateOrderStatus} />
-        )}
+        <div key={`${activeTab}-${planState.activeStage}`} className="animate-fade-in">
+          {activeTab === 'entry' && (
+            <OrderEntryTab state={planState} onUpdateStatus={handleUpdateOrderStatus} />
+          )}
 
-        {activeTab === 'picking' && (
-          <OrderPickingTab
-            state={planState}
-            onMoveToteToCart={handleMoveToteToCart}
-            onOpenHandheld={() => setIsHandheldOpen(true)}
-            onUpdateCartToteLimit={limit => handleUpdateConfig({ maxTotesPerCart: limit })}
-          />
-        )}
+          {activeTab === 'picking' && (
+            <OrderPickingTab
+              state={planState}
+              onMoveToteToCart={handleMoveToteToCart}
+              onOpenHandheld={() => setIsHandheldOpen(true)}
+              onUpdateCartToteLimit={limit => handleUpdateConfig({ maxTotesPerCart: limit })}
+            />
+          )}
 
-        {activeTab === 'flight' && (
-          <FlightPlannerTab state={planState} />
-        )}
+          {activeTab === 'flight' && (
+            <FlightPlannerTab state={planState} />
+          )}
+        </div>
       </main>
 
       {/* Interactive Modals */}

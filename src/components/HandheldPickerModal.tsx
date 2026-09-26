@@ -41,7 +41,7 @@ export const HandheldPickerModal: React.FC<HandheldPickerModalProps> = ({ isOpen
   const progressPct = totalCartItems > 0 ? Math.round((pickedCartItemsCount / totalCartItems) * 100) : 0;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-slate-900/60 backdrop-blur-md no-print">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-slate-900/60 backdrop-blur-md animate-fade-in no-print">
       <div className="glass-panel border-2 border-zamiigo-teal-light rounded-3xl w-full max-w-md h-[90vh] flex flex-col overflow-hidden shadow-2xl animate-fade-in">
         
         {/* Handheld Device Header */}

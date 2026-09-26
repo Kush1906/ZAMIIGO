@@ -22,7 +22,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
   const warnings = issues.filter(i => i.type === 'WARNING');
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-md no-print">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-md animate-fade-in no-print">
       <div className="glass-panel rounded-3xl w-full max-w-xl overflow-hidden shadow-2xl animate-fade-in">
         
         {/* Header */}
