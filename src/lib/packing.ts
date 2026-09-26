@@ -223,11 +223,13 @@ export function packOrdersIntoTotesAndCarts(
   }
 
   // Step 3: Handle standard orders — Best-Fit Decreasing packing into shared totes
+  // CRITICAL: Only share totes between orders headed to the SAME destination community.
   standardOrders.sort((a, b) => b.total_volume_cuin - a.total_volume_cuin);
 
   interface OpenTote {
     tote_id: string;
     tote_code: string;
+    destination_community: string; // all orders in this tote must share this destination
     orders: HouseholdOrder[];
     items: LineItem[];
     weight: number;
@@ -242,6 +244,9 @@ export function packOrdersIntoTotesAndCarts(
 
     for (let i = 0; i < openTotes.length; i++) {
       const t = openTotes[i];
+      // P0 FIX: NEVER mix destinations inside one tote
+      if (t.destination_community !== order.destination_community) continue;
+
       const newVol = t.volume + order.total_volume_cuin;
       const newWt = t.weight + order.total_weight_lb;
 
@@ -267,6 +272,7 @@ export function packOrdersIntoTotesAndCarts(
       openTotes.push({
         tote_id: toteId,
         tote_code: toteId,
+        destination_community: order.destination_community,
         orders: [order],
         items: [...order.items],
         weight: order.total_weight_lb,

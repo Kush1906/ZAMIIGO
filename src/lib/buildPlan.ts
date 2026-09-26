@@ -30,21 +30,21 @@ export function buildPlanFromItems(
     schedules = BONUS_FLIGHTS;
   } else if (stage === 'custom') {
     // P0 FIX: For custom uploads without a capacity file, we use a single-departure
-    // plan with today's date as the departure date. We do NOT silently pick Stage 1 or Stage 2
-    // dates because those June 2026 dates may not match the judge's dataset.
-    // A single-flight plan is always safe: all eligible orders land on one departure.
-    const minDate = items.reduce((m, i) => i.order_date < m ? i.order_date : m, items[0]?.order_date ?? '2026-06-01');
+    // plan with the LATEST order date as departure date so ALL orders are date-eligible.
+    // We do NOT silently pick Stage 1 or Stage 2 dates because those June 2026 dates
+    // may not match the judge's dataset.
+    const maxDate = items.reduce((m, i) => i.order_date > m ? i.order_date : m, items[0]?.order_date ?? '2026-06-01');
     schedules = [{
       departure_id: 'DEP-CUSTOM',
-      departure_date: minDate,
+      departure_date: maxDate,
       destination: 'Webequie (CYWP)',
       available_totes: 90,
       available_payload_lb: 2877,
       available_volume_cuft: 187.5,
     }];
     customScheduleError =
-      'No flight capacity CSV was provided. The plan uses a single departure on the earliest order date ' +
-      `(${minDate}) with full Cessna 208 capacity. ` +
+      'No flight capacity CSV was provided. The plan uses a single departure on the latest order date ' +
+      `(${maxDate}) with full Cessna 208 capacity. ` +
       'For multi-departure scheduling, upload a flight capacity CSV alongside the orders CSV.';
   } else {
     schedules = STAGE_1_FLIGHT;

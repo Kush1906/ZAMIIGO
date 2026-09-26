@@ -249,6 +249,7 @@ export function planFlightDepartures(
     totalItemsVolumeCuFt: number; // sum of item volumes (estimate)
     totalTotes: number;
     earliestOrderDate: string;
+    destination: string; // community destination (e.g. "Webequie", "Neskantaga", "Summer Beaver")
   }
 
   const groupMap = new Map<number, OrderGroup>();
@@ -266,6 +267,7 @@ export function planFlightDepartures(
         totalItemsVolumeCuFt: 0,
         totalTotes: 0,
         earliestOrderDate: '9999-99-99',
+        destination: order.destination_community,
       });
     }
     const group = groupMap.get(gid)!;
@@ -297,6 +299,26 @@ export function planFlightDepartures(
     return a.totalTotes - b.totalTotes;
   });
 
+  /**
+   * Normalize a destination string for comparison.
+   * Departure destinations may include airport codes like "Webequie (CYWP)" while
+   * order destination_community is just "Webequie". We strip parenthetical suffixes
+   * and compare case-insensitively.
+   */
+  function normalizeDestination(s: string): string {
+    return s.replace(/\s*\([^)]*\)\s*/g, '').trim().toLowerCase();
+  }
+
+  /**
+   * Check if a departure has a specific destination constraint (multi-community mode)
+   * vs. being a generic single-community departure where all orders are implicitly eligible.
+   * If ALL departures share the same normalized destination, destination filtering is
+   * not needed (Stage 1, Stage 2 are single-community). If departures have different
+   * destinations, filter strictly.
+   */
+  const uniqueDepDests = new Set(schedules.map(s => normalizeDestination(s.destination)));
+  const isMultiDestination = uniqueDepDests.size > 1;
+
   const departures: FlightDeparture[] = [];
   let pendingGroups = [...sortedGroups];
 
@@ -304,6 +326,7 @@ export function planFlightDepartures(
     const sched = schedules[sIdx];
     const depDate = sched.departure_date;
     const isLastDeparture = sIdx === schedules.length - 1;
+    const normalizedDepDest = normalizeDestination(sched.destination);
 
     const depToteIds: string[] = [];
     const depOrderIds: string[] = [];
@@ -317,8 +340,14 @@ export function planFlightDepartures(
 
     for (const group of pendingGroups) {
       // A group is eligible only if ALL its orders were placed on or before this departure
-      const allEligible = group.orders.every(o => o.order_date <= depDate);
-      if (allEligible) {
+      const allDateEligible = group.orders.every(o => o.order_date <= depDate);
+
+      // P0 FIX: In multi-destination mode, a group is also only eligible if its
+      // destination matches the departure's destination. A Neskantaga order must
+      // never board a Webequie flight.
+      const destMatch = !isMultiDestination || normalizeDestination(group.destination) === normalizedDepDest;
+
+      if (allDateEligible && destMatch) {
         eligibleGroups.push(group);
       } else {
         futureGroups.push(group);
