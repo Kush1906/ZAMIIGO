@@ -6,10 +6,11 @@ interface HeaderProps {
   state: PlanState;
   activeTab: 'entry' | 'picking' | 'flight';
   setActiveTab: (tab: 'entry' | 'picking' | 'flight') => void;
-  onSelectStage: (stage: 'stage1' | 'stage2' | 'bonus') => void;
+  onSelectStage: (stage: 'stage1' | 'stage2' | 'bonus' | 'custom') => void;
   onOpenUpload: () => void;
   onToggleHandheld: () => void;
   onOpenSettings: () => void;
+  hasCustomData: boolean;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -20,6 +21,7 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenUpload,
   onToggleHandheld,
   onOpenSettings,
+  hasCustomData,
 }) => {
   const errorCount = state.issues.filter(i => i.type === 'ERROR').length;
   const warningCount = state.issues.filter(i => i.type === 'WARNING').length;
@@ -87,6 +89,18 @@ export const Header: React.FC<HeaderProps> = ({
             >
               Advanced Routing
             </button>
+            {hasCustomData && (
+              <button
+                onClick={() => onSelectStage('custom')}
+                className={`px-4 py-2 rounded-xl text-xs font-semibold transition-all duration-300 whitespace-nowrap ${
+                  state.activeStage === 'custom'
+                    ? 'bg-gradient-to-r from-emerald-400 to-emerald-500 text-slate-900 shadow-md'
+                    : 'text-white/70 hover:text-white hover:bg-white/10'
+                }`}
+              >
+                Custom Dataset
+              </button>
+            )}
           </div>
 
           {/* Dataset Stage Switcher — Mobile/Tablet Dropdown */}

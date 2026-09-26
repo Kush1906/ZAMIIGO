@@ -142,7 +142,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
         <div className="p-4 bg-slate-50 border-t border-slate-200 flex justify-end">
           <button
             onClick={onClose}
-            className="px-5 py-2 rounded-xl bg-zamiigo-teal hover:bg-zamiigo-teal text-slate-900 text-xs font-semibold shadow-sm transition"
+            className="px-5 py-2 rounded-xl bg-zamiigo-teal hover:bg-zamiigo-teal text-white text-xs font-semibold shadow-sm transition"
           >
             Done
           </button>

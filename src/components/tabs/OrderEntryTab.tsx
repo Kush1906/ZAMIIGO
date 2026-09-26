@@ -182,10 +182,10 @@ export const OrderEntryTab: React.FC<OrderEntryTabProps> = ({ state, onUpdateSta
       </div>
 
       {/* Orders Table */}
-      <div className="glass-panel rounded-3xl overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-sm">
-            <thead className="bg-slate-50 border-b border-slate-200 text-xs uppercase tracking-wider text-slate-400 font-mono">
+      <div className="glass-panel rounded-3xl overflow-hidden flex flex-col max-h-[600px] shadow-sm border border-slate-200">
+        <div className="overflow-x-auto overflow-y-auto flex-1">
+          <table className="w-full text-left text-sm relative">
+            <thead className="bg-slate-50 text-xs uppercase tracking-wider text-slate-400 font-mono sticky top-0 z-10 shadow-sm">
               <tr>
                 <th className="py-3 px-4 w-10"></th>
                 <th className="py-3 px-4">Household & Order ID</th>

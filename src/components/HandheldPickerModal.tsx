@@ -70,7 +70,7 @@ export const HandheldPickerModal: React.FC<HandheldPickerModalProps> = ({ isOpen
                 onClick={() => setSelectedCartId(c.cart_id)}
                 className={`px-3 py-1.5 rounded-lg text-xs font-bold font-mono transition ${
                   selectedCartId === c.cart_id
-                    ? 'bg-zamiigo-teal text-slate-900'
+                    ? 'bg-zamiigo-teal text-white'
                     : 'bg-slate-100 text-slate-400 hover:text-slate-800'
                 }`}
               >

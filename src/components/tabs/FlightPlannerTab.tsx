@@ -153,11 +153,11 @@ export const FlightPlannerTab: React.FC<FlightPlannerTabProps> = ({ state }) => 
 
       {/* Bonus Objective: Multi-Community Route Payload & Triangular Flight Analysis */}
       {state.activeStage === 'bonus' && circuitComparison && (
-        <div className="bg-slate-900 text-white rounded-2xl p-5 shadow-xl border border-zamiigo-teal/50 space-y-5">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-700/60 pb-3">
+        <div className="glass-panel rounded-3xl p-6 space-y-5">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-200 pb-3">
             <div className="flex items-center space-x-2">
-              <Sparkles className="h-5 w-5 text-amber-400" />
-              <h3 className="font-extrabold text-base tracking-tight text-white font-mono">
+              <Sparkles className="h-5 w-5 text-amber-500" />
+              <h3 className="font-extrabold text-base tracking-tight text-slate-900 font-mono">
                 Advanced Optimization: 3-Community Routing & Multi-Leg Circuit Analysis
               </h3>
             </div>
@@ -166,59 +166,59 @@ export const FlightPlannerTab: React.FC<FlightPlannerTabProps> = ({ state }) => 
             </span>
           </div>
 
-          <p className="text-xs text-slate-300 leading-relaxed">
+          <p className="text-xs text-slate-500 leading-relaxed">
             The advanced network simulation extends cargo ops from Webequie across three First Nations communities served from the Nakina Hub (CYQN). Each community route has a distinct maximum payload dictated by round-trip fuel requirements (Cessna 208 Caravan, 3,923 lb operational empty weight):
           </p>
 
           {/* Route payload reference cards */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            <div className="bg-white/10 rounded-xl p-3 border border-white/10 text-xs">
-              <div className="font-bold text-amber-300 font-mono flex items-center justify-between">
+            <div className="bg-slate-50 rounded-xl p-3 border border-slate-200 text-xs">
+              <div className="font-bold text-amber-600 font-mono flex items-center justify-between">
                 <span>Neskantaga (CYLH)</span>
-                <span className="text-[10px] bg-amber-400/20 px-1.5 py-0.5 rounded text-amber-200">130 NM</span>
+                <span className="text-[10px] bg-amber-100 px-1.5 py-0.5 rounded text-amber-700">130 NM</span>
               </div>
-              <div className="text-slate-300 text-[11px] mt-1 font-mono">299 mi RT | 1.96 hrs | 861 lb fuel</div>
-              <div className="text-white font-mono font-bold mt-1 text-sm">3,062 lb Max Payload</div>
+              <div className="text-slate-500 text-[11px] mt-1 font-mono">299 mi RT | 1.96 hrs | 861 lb fuel</div>
+              <div className="text-slate-800 font-mono font-bold mt-1 text-sm">3,062 lb Max Payload</div>
             </div>
-            <div className="bg-white/10 rounded-xl p-3 border border-white/10 text-xs">
-              <div className="font-bold text-emerald-300 font-mono flex items-center justify-between">
+            <div className="bg-slate-50 rounded-xl p-3 border border-slate-200 text-xs">
+              <div className="font-bold text-emerald-600 font-mono flex items-center justify-between">
                 <span>Summer Beaver (CJV7)</span>
-                <span className="text-[10px] bg-emerald-400/20 px-1.5 py-0.5 rounded text-emerald-200">167 NM</span>
+                <span className="text-[10px] bg-emerald-100 px-1.5 py-0.5 rounded text-emerald-700">167 NM</span>
               </div>
-              <div className="text-slate-300 text-[11px] mt-1 font-mono">384 mi RT | 2.46 hrs | 1,036 lb fuel</div>
-              <div className="text-white font-mono font-bold mt-1 text-sm">2,887 lb Max Payload</div>
+              <div className="text-slate-500 text-[11px] mt-1 font-mono">384 mi RT | 2.46 hrs | 1,036 lb fuel</div>
+              <div className="text-slate-800 font-mono font-bold mt-1 text-sm">2,887 lb Max Payload</div>
             </div>
-            <div className="bg-white/10 rounded-xl p-3 border border-white/10 text-xs">
-              <div className="font-bold text-sky-300 font-mono flex items-center justify-between">
+            <div className="bg-slate-50 rounded-xl p-3 border border-slate-200 text-xs">
+              <div className="font-bold text-sky-600 font-mono flex items-center justify-between">
                 <span>Webequie (CYWP)</span>
-                <span className="text-[10px] bg-sky-400/20 px-1.5 py-0.5 rounded text-sky-200">169 NM</span>
+                <span className="text-[10px] bg-sky-100 px-1.5 py-0.5 rounded text-sky-700">169 NM</span>
               </div>
-              <div className="text-slate-300 text-[11px] mt-1 font-mono">389 mi RT | 2.49 hrs | 1,046 lb fuel</div>
-              <div className="text-white font-mono font-bold mt-1 text-sm">2,877 lb Max Payload</div>
+              <div className="text-slate-500 text-[11px] mt-1 font-mono">389 mi RT | 2.49 hrs | 1,046 lb fuel</div>
+              <div className="text-slate-800 font-mono font-bold mt-1 text-sm">2,877 lb Max Payload</div>
             </div>
           </div>
 
           {/* Side-by-Side Comparison: Direct vs Circuit */}
-          <div className="bg-slate-800/90 rounded-xl p-4 border border-slate-700 space-y-4">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-700 pb-2">
+          <div className="bg-slate-50/80 rounded-xl p-4 border border-slate-200 space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-200 pb-2">
               <div>
-                <span className="text-xs font-mono font-bold text-amber-300 uppercase tracking-wider">
+                <span className="text-xs font-mono font-bold text-amber-600 uppercase tracking-wider">
                   Sponsor Evaluation: 2 Separate Direct Flights vs. Single Multi-Leg Circuit
                 </span>
-                <p className="text-[11px] text-slate-400 mt-0.5">
+                <p className="text-[11px] text-slate-500 mt-0.5">
                   Tests whether combining Neskantaga (CYLH) and Summer Beaver (CJV7) into a triangular round trip beats two separate flights.
                 </p>
               </div>
               <div className="flex items-center gap-2">
-                <span className="px-2.5 py-1 rounded-md text-xs font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-mono flex items-center gap-1">
+                <span className="px-2.5 py-1 rounded-md text-xs font-bold bg-emerald-50 text-emerald-600 border border-emerald-200 font-mono flex items-center gap-1">
                   <ShieldCheck className="h-3.5 w-3.5" /> {circuitComparison.verdict === 'CIRCUIT_WINS' ? 'CIRCUIT BEATS 2 FLIGHTS' : 'DIRECT PREFERRED'}
                 </span>
               </div>
             </div>
 
             {/* Verdict Callout */}
-            <div className="p-3 rounded-lg bg-emerald-950/40 border border-emerald-500/30 text-xs text-emerald-200 flex items-start gap-2.5">
-              <CheckCircle2 className="h-4 w-4 text-emerald-400 shrink-0 mt-0.5" />
+            <div className="p-3 rounded-lg bg-emerald-50 border border-emerald-200 text-xs text-emerald-800 flex items-start gap-2.5">
+              <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0 mt-0.5" />
               <div className="leading-relaxed">
                 <strong>Executive Result:</strong> {circuitComparison.verdict_explanation}
               </div>
@@ -228,55 +228,55 @@ export const FlightPlannerTab: React.FC<FlightPlannerTabProps> = ({ state }) => 
             <div className="overflow-x-auto">
               <table className="w-full text-xs font-mono border-collapse">
                 <thead>
-                  <tr className="border-b border-slate-700 text-slate-400 text-left">
+                  <tr className="border-b border-slate-200 text-slate-500 text-left">
                     <th className="py-2 px-3">Operational Metric</th>
-                    <th className="py-2 px-3 bg-white/5 rounded-t-lg">Option A: 2 Separate Flights</th>
-                    <th className="py-2 px-3 bg-emerald-500/10 rounded-t-lg text-emerald-300">Option B: Single Triangular Circuit</th>
+                    <th className="py-2 px-3 bg-white rounded-t-lg">Option A: 2 Separate Flights</th>
+                    <th className="py-2 px-3 bg-emerald-50 rounded-t-lg text-emerald-700">Option B: Single Triangular Circuit</th>
                     <th className="py-2 px-3 text-right">Net Operational Savings</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-700/60 text-slate-300">
+                <tbody className="divide-y divide-slate-200 text-slate-700">
                   <tr>
-                    <td className="py-2 px-3 font-sans font-medium text-slate-300">Aircraft Sorties</td>
-                    <td className="py-2 px-3 bg-white/5">{circuitComparison.directCombined.total_flights} round trips</td>
-                    <td className="py-2 px-3 bg-emerald-500/10 font-bold text-emerald-200">{circuitComparison.circuit.flights_required} round trip</td>
-                    <td className="py-2 px-3 text-right text-emerald-400 font-bold">1 flight sortie saved</td>
+                    <td className="py-2 px-3 font-sans font-medium text-slate-700">Aircraft Sorties</td>
+                    <td className="py-2 px-3 bg-white">{circuitComparison.directCombined.total_flights} round trips</td>
+                    <td className="py-2 px-3 bg-emerald-50 font-bold text-emerald-700">{circuitComparison.circuit.flights_required} round trip</td>
+                    <td className="py-2 px-3 text-right text-emerald-600 font-bold">1 flight sortie saved</td>
                   </tr>
                   <tr>
-                    <td className="py-2 px-3 font-sans font-medium text-slate-300">Total Route Distance</td>
-                    <td className="py-2 px-3 bg-white/5">{circuitComparison.directCombined.total_roundtrip_miles} statute mi (594 NM)</td>
-                    <td className="py-2 px-3 bg-emerald-500/10 font-bold text-emerald-200">{circuitComparison.circuit.total_distance_statute_mi} statute mi ({circuitComparison.circuit.total_distance_nm} NM)</td>
-                    <td className="py-2 px-3 text-right text-emerald-400 font-bold">-{circuitComparison.savings.miles_saved} mi (-{circuitComparison.savings.miles_saved_pct}%)</td>
+                    <td className="py-2 px-3 font-sans font-medium text-slate-700">Total Route Distance</td>
+                    <td className="py-2 px-3 bg-white">{circuitComparison.directCombined.total_roundtrip_miles} statute mi (594 NM)</td>
+                    <td className="py-2 px-3 bg-emerald-50 font-bold text-emerald-700">{circuitComparison.circuit.total_distance_statute_mi} statute mi ({circuitComparison.circuit.total_distance_nm} NM)</td>
+                    <td className="py-2 px-3 text-right text-emerald-600 font-bold">-{circuitComparison.savings.miles_saved} mi (-{circuitComparison.savings.miles_saved_pct}%)</td>
                   </tr>
                   <tr>
-                    <td className="py-2 px-3 font-sans font-medium text-slate-300">Total Flight Time</td>
-                    <td className="py-2 px-3 bg-white/5">{circuitComparison.directCombined.total_flight_hours} hours</td>
-                    <td className="py-2 px-3 bg-emerald-500/10 font-bold text-emerald-200">{circuitComparison.circuit.total_flight_hours} hours</td>
-                    <td className="py-2 px-3 text-right text-emerald-400 font-bold">-{circuitComparison.savings.flight_hours_saved} hrs (-{circuitComparison.savings.flight_hours_saved_pct}%)</td>
+                    <td className="py-2 px-3 font-sans font-medium text-slate-700">Total Flight Time</td>
+                    <td className="py-2 px-3 bg-white">{circuitComparison.directCombined.total_flight_hours} hours</td>
+                    <td className="py-2 px-3 bg-emerald-50 font-bold text-emerald-700">{circuitComparison.circuit.total_flight_hours} hours</td>
+                    <td className="py-2 px-3 text-right text-emerald-600 font-bold">-{circuitComparison.savings.flight_hours_saved} hrs (-{circuitComparison.savings.flight_hours_saved_pct}%)</td>
                   </tr>
                   <tr>
-                    <td className="py-2 px-3 font-sans font-medium text-slate-300">Estimated Fuel Burn</td>
-                    <td className="py-2 px-3 bg-white/5">{circuitComparison.directCombined.total_fuel_burn_lb} lb</td>
-                    <td className="py-2 px-3 bg-emerald-500/10 font-bold text-emerald-200">~{circuitComparison.circuit.estimated_fuel_burn_lb} lb</td>
-                    <td className="py-2 px-3 text-right text-emerald-400 font-bold">~{circuitComparison.savings.fuel_saved_lb} lb fuel (-{circuitComparison.savings.fuel_saved_pct}%)</td>
+                    <td className="py-2 px-3 font-sans font-medium text-slate-700">Estimated Fuel Burn</td>
+                    <td className="py-2 px-3 bg-white">{circuitComparison.directCombined.total_fuel_burn_lb} lb</td>
+                    <td className="py-2 px-3 bg-emerald-50 font-bold text-emerald-700">~{circuitComparison.circuit.estimated_fuel_burn_lb} lb</td>
+                    <td className="py-2 px-3 text-right text-emerald-600 font-bold">~{circuitComparison.savings.fuel_saved_lb} lb fuel (-{circuitComparison.savings.fuel_saved_pct}%)</td>
                   </tr>
                   <tr>
-                    <td className="py-2 px-3 font-sans font-medium text-slate-300">Orders Delivered</td>
-                    <td className="py-2 px-3 bg-white/5">{circuitComparison.directCombined.total_orders_delivered} orders (0 deferred)</td>
-                    <td className="py-2 px-3 bg-emerald-500/10 font-bold text-emerald-200">{circuitComparison.circuit.orders_delivered} orders (0 deferred)</td>
-                    <td className="py-2 px-3 text-right text-emerald-400">100% On-Time Delivery</td>
+                    <td className="py-2 px-3 font-sans font-medium text-slate-700">Orders Delivered</td>
+                    <td className="py-2 px-3 bg-white">{circuitComparison.directCombined.total_orders_delivered} orders (0 deferred)</td>
+                    <td className="py-2 px-3 bg-emerald-50 font-bold text-emerald-700">{circuitComparison.circuit.orders_delivered} orders (0 deferred)</td>
+                    <td className="py-2 px-3 text-right text-emerald-600">100% On-Time Delivery</td>
                   </tr>
                   <tr>
-                    <td className="py-2 px-3 font-sans font-medium text-slate-300">Takeoff Cargo Payload</td>
-                    <td className="py-2 px-3 bg-white/5">CYLH: {circuitComparison.directA.payload_used_lb} lb / CJV7: {circuitComparison.directB.payload_used_lb} lb</td>
-                    <td className="py-2 px-3 bg-emerald-500/10 font-bold text-emerald-200">{circuitComparison.circuit.initial_payload_lb} lb (Limit: {circuitComparison.circuit.max_allowable_payload_lb} lb)</td>
-                    <td className="py-2 px-3 text-right text-emerald-400 font-bold">+{circuitComparison.circuit.max_allowable_payload_lb - circuitComparison.circuit.initial_payload_lb} lb margin</td>
+                    <td className="py-2 px-3 font-sans font-medium text-slate-700">Takeoff Cargo Payload</td>
+                    <td className="py-2 px-3 bg-white">CYLH: {circuitComparison.directA.payload_used_lb} lb / CJV7: {circuitComparison.directB.payload_used_lb} lb</td>
+                    <td className="py-2 px-3 bg-emerald-50 font-bold text-emerald-700">{circuitComparison.circuit.initial_payload_lb} lb (Limit: {circuitComparison.circuit.max_allowable_payload_lb} lb)</td>
+                    <td className="py-2 px-3 text-right text-emerald-600 font-bold">+{circuitComparison.circuit.max_allowable_payload_lb - circuitComparison.circuit.initial_payload_lb} lb margin</td>
                   </tr>
                   <tr>
-                    <td className="py-2 px-3 font-sans font-medium text-slate-300">Cabin Totes Occupied</td>
-                    <td className="py-2 px-3 bg-white/5">CYLH: {circuitComparison.directA.totes_count} totes / CJV7: {circuitComparison.directB.totes_count} totes</td>
-                    <td className="py-2 px-3 bg-emerald-500/10 font-bold text-emerald-200">{circuitComparison.circuit.initial_totes_count} / {circuitComparison.circuit.max_totes_capacity} totes</td>
-                    <td className="py-2 px-3 text-right text-emerald-400 font-bold">+{circuitComparison.circuit.max_totes_capacity - circuitComparison.circuit.initial_totes_count} slots free</td>
+                    <td className="py-2 px-3 font-sans font-medium text-slate-700">Cabin Totes Occupied</td>
+                    <td className="py-2 px-3 bg-white">CYLH: {circuitComparison.directA.totes_count} totes / CJV7: {circuitComparison.directB.totes_count} totes</td>
+                    <td className="py-2 px-3 bg-emerald-50 font-bold text-emerald-700">{circuitComparison.circuit.initial_totes_count} / {circuitComparison.circuit.max_totes_capacity} totes</td>
+                    <td className="py-2 px-3 text-right text-emerald-600 font-bold">+{circuitComparison.circuit.max_totes_capacity - circuitComparison.circuit.initial_totes_count} slots free</td>
                   </tr>
                 </tbody>
               </table>

@@ -61,7 +61,7 @@ export const OrderPickingTab: React.FC<OrderPickingTabProps> = ({
           <div className="flex items-center space-x-3">
             <button
               onClick={onOpenHandheld}
-              className="flex items-center space-x-2 px-3.5 py-2 rounded-xl bg-zamiigo-teal hover:bg-zamiigo-teal text-slate-900 text-xs font-semibold shadow-sm transition"
+              className="flex items-center space-x-2 px-3.5 py-2 rounded-xl bg-zamiigo-teal hover:bg-zamiigo-teal text-white text-xs font-semibold shadow-sm transition"
             >
               <ShoppingBag className="h-4 w-4" />
               <span>Launch Handheld Scanner</span>
@@ -133,13 +133,13 @@ export const OrderPickingTab: React.FC<OrderPickingTabProps> = ({
               onClick={() => setSelectedCartId(cart.cart_id)}
               className={`px-3.5 py-2 rounded-xl text-xs font-semibold flex items-center space-x-2 transition ${
                 selectedCart?.cart_id === cart.cart_id
-                  ? 'bg-zamiigo-teal text-slate-900 shadow-sm'
+                  ? 'bg-zamiigo-teal text-white shadow-sm'
                   : 'bg-white text-slate-400 hover:text-slate-800 border border-slate-200'
               }`}
             >
               <span>{cart.cart_code}</span>
               <span className={`px-1.5 py-0.2 rounded-full text-[10px] font-mono ${
-                selectedCart?.cart_id === cart.cart_id ? 'bg-sky-700 text-slate-900' : 'bg-slate-100 text-slate-400'
+                selectedCart?.cart_id === cart.cart_id ? 'bg-white/20 text-white' : 'bg-slate-100 text-slate-400'
               }`}>
                 {cart.tote_ids.length} totes
               </span>
@@ -305,9 +305,9 @@ export const OrderPickingTab: React.FC<OrderPickingTabProps> = ({
               </button>
             </div>
 
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs">
-                <thead className="bg-slate-50 text-slate-400 font-mono uppercase tracking-wider border-b border-slate-200">
+            <div className="overflow-x-auto overflow-y-auto max-h-[500px]">
+              <table className="w-full text-left text-xs relative">
+                <thead className="bg-slate-50 text-slate-400 font-mono uppercase tracking-wider sticky top-0 z-10 shadow-sm">
                   <tr>
                     <th className="py-2.5 px-3 w-8">Pick</th>
                     <th className="py-2.5 px-3">Tote #</th>

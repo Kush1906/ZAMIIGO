@@ -23,12 +23,23 @@ export const App: React.FC = () => {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
   const [customSchedules, setCustomSchedules] = useState<DepartureScheduleDef[] | undefined>();
+  const [customCsvText, setCustomCsvText] = useState<string | undefined>();
 
   // Load dataset
-  const loadDataset = async (stage: 'stage1' | 'stage2' | 'bonus') => {
+  const loadDataset = async (stage: 'stage1' | 'stage2' | 'bonus' | 'custom') => {
     setLoading(true);
     setCustomSchedules(undefined);
     try {
+      if (stage === 'custom' && customCsvText) {
+        await new Promise(resolve => setTimeout(resolve, 700));
+        const parseResult = parseOrdersCsv(customCsvText);
+        if (parseResult.success && parseResult.items.length > 0) {
+          const plan = buildPlanFromItems(parseResult.items, 'custom', undefined, customSchedules);
+          setPlanState(plan);
+        }
+        return;
+      }
+
       const csvPath =
         stage === 'stage1'
           ? '/data/stage1_orders.csv'
@@ -60,13 +71,18 @@ export const App: React.FC = () => {
     loadDataset('stage1');
   }, []);
 
-  const handleApplyCustomCsv = (csvText: string, schedules?: DepartureScheduleDef[]) => {
+  const handleApplyCustomCsv = async (csvText: string, schedules?: DepartureScheduleDef[]) => {
+    setCustomCsvText(csvText);
     setCustomSchedules(schedules);
+    setLoading(true);
+    
+    await new Promise(resolve => setTimeout(resolve, 700));
     const parseResult = parseOrdersCsv(csvText);
     if (parseResult.success && parseResult.items.length > 0) {
       const plan = buildPlanFromItems(parseResult.items, 'custom', undefined, schedules);
       setPlanState(plan);
     }
+    setLoading(false);
   };
 
   const handleMoveToteToCart = (toteId: string, targetCartId: string): { error?: string } => {
@@ -113,6 +129,7 @@ export const App: React.FC = () => {
         onOpenUpload={() => setIsUploadOpen(true)}
         onToggleHandheld={() => setIsHandheldOpen(true)}
         onOpenSettings={() => setIsSettingsOpen(true)}
+        hasCustomData={!!customCsvText}
       />
 
       {/* Main Content Area */}
