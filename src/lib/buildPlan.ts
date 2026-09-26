@@ -50,6 +50,17 @@ export function buildPlanFromItems(
     schedules = STAGE_1_FLIGHT;
   }
 
+  // P0 FIX: Before flight planning, mark any order with unpackable items as "held".
+  // An order with missing items is incomplete and must not be manifested as "shipped".
+  // Staff must resolve the oversized items before the order can be dispatched.
+  const unpackableOrderIds = new Set(packingResult.unpackableItems.map(u => u.order_id));
+  for (const order of packingResult.orders) {
+    if (unpackableOrderIds.has(order.order_id)) {
+      order.held_from_flight = true;
+      order.held_reason = `Held: ${order.unpackable_item_count} item(s) exceed tote dimensions and require staff resolution before dispatch.`;
+    }
+  }
+
   // 4. Plan flight loads & rollovers (whole-order atomic assignment)
   const flightResult = planFlightDepartures(packingResult.orders, packingResult.totes, schedules, config);
 

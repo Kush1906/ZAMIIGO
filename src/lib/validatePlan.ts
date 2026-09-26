@@ -164,7 +164,17 @@ export function validatePlan(state: PlanState): ValidationIssue[] {
     for (const ordId of dep.assigned_order_ids) assignedOrderIds.add(ordId);
   }
   for (const order of orders) {
-    if (!assignedOrderIds.has(order.order_id) && !order.is_rolled_over) {
+    if (order.held_from_flight) {
+      // Held orders are intentionally kept off manifests — surface as a WARNING, not ERROR
+      // (the UNPACKABLE_ITEMS error in buildPlan.ts already describes what needs resolving)
+      issues.push({
+        type: 'WARNING',
+        code: 'HELD_ORDER_NOT_DISPATCHED',
+        message: `Order #${order.order_id} (Household #${order.household_id}) is held pending staff resolution and will not appear in any flight manifest. ${order.held_reason ?? ''}`,
+        entityId: order.order_id,
+        tabTarget: 'picking',
+      });
+    } else if (!assignedOrderIds.has(order.order_id) && !order.is_rolled_over) {
       issues.push({
         type: 'ERROR',
         code: 'ORDER_NOT_ASSIGNED_TO_FLIGHT',

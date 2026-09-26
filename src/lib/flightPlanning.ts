@@ -29,7 +29,9 @@ export const STAGE_2_FLIGHTS: DepartureScheduleDef[] = [
     destination: 'Webequie (CYWP)',
     available_totes: 22,
     available_payload_lb: 703,
-    available_volume_cuft: 45.83,
+    // P1 FIX: Use exact 22 × TOTE_VOLUME_CUFT so the 22nd tote slot is never unreachable
+    // due to floating-point rounding (45.83 < 22 × 2.0833... = 45.8333...).
+    available_volume_cuft: Math.ceil(22 * (3600 / 1728) * 100) / 100, // 45.84
   },
   {
     departure_id: 'DEP-02',
@@ -255,6 +257,9 @@ export function planFlightDepartures(
   const groupMap = new Map<number, OrderGroup>();
 
   for (const order of updatedOrders) {
+    // P0 FIX: Skip held orders (incomplete orders with unpackable items).
+    // They must NOT be added to any flight group — staff must resolve before dispatch.
+    if (order.held_from_flight) continue;
     if (!orderIdToGroup.has(order.order_id)) continue;
     const gid = orderIdToGroup.get(order.order_id)!;
 
@@ -309,16 +314,6 @@ export function planFlightDepartures(
     return s.replace(/\s*\([^)]*\)\s*/g, '').trim().toLowerCase();
   }
 
-  /**
-   * Check if a departure has a specific destination constraint (multi-community mode)
-   * vs. being a generic single-community departure where all orders are implicitly eligible.
-   * If ALL departures share the same normalized destination, destination filtering is
-   * not needed (Stage 1, Stage 2 are single-community). If departures have different
-   * destinations, filter strictly.
-   */
-  const uniqueDepDests = new Set(schedules.map(s => normalizeDestination(s.destination)));
-  const isMultiDestination = uniqueDepDests.size > 1;
-
   const departures: FlightDeparture[] = [];
   let pendingGroups = [...sortedGroups];
 
@@ -342,14 +337,19 @@ export function planFlightDepartures(
       // A group is eligible only if ALL its orders were placed on or before this departure
       const allDateEligible = group.orders.every(o => o.order_date <= depDate);
 
-      // P0 FIX: In multi-destination mode, a group is also only eligible if its
-      // destination matches the departure's destination. A Neskantaga order must
-      // never board a Webequie flight.
-      const destMatch = !isMultiDestination || normalizeDestination(group.destination) === normalizedDepDest;
+      // P0 FIX (unconditional): A group's destination must match the departure destination.
+      // This applies to every schedule — single or multi-community.
+      // Single-community schedules have exactly one normalized destination, so all matching
+      // orders pass automatically. Wrong-destination orders are held as unassigned with a reason.
+      const destMatch = normalizeDestination(group.destination) === normalizedDepDest;
 
       if (allDateEligible && destMatch) {
         eligibleGroups.push(group);
+      } else if (!destMatch) {
+        // Wrong destination: keep in pending for future departures (or flag at end)
+        futureGroups.push(group);
       } else {
+        // Date not yet eligible
         futureGroups.push(group);
       }
     }
@@ -438,11 +438,17 @@ export function planFlightDepartures(
 
   // Orders with no assigned flight after all departures
   if (pendingGroups.length > 0) {
+    const servedDests = new Set(schedules.map(s => normalizeDestination(s.destination)));
     for (const group of pendingGroups) {
+      const isDestServed = servedDests.has(normalizeDestination(group.destination));
       for (const order of group.orders) {
         if (!order.assigned_flight_id) {
           order.is_rolled_over = true;
-          order.rollover_reason = 'Awaiting a future charter flight — not scheduled in the current departure plan';
+          if (!isDestServed) {
+            order.rollover_reason = `No scheduled departure serving destination "${group.destination}". Unmatched orders held pending route charter.`;
+          } else {
+            order.rollover_reason = order.rollover_reason || 'Awaiting future departure — capacity exceeded on scheduled flights';
+          }
         }
       }
     }

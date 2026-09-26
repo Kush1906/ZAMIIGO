@@ -49,6 +49,8 @@ export interface HouseholdOrder {
   rollover_reason?: string;
   has_unpackable_items: boolean; // true if any item couldn't be packed
   unpackable_item_count: number;
+  held_from_flight?: boolean;  // true = order is held pending staff resolution (incomplete)
+  held_reason?: string;        // reason displayed in the UI
 }
 
 export interface ToteItemAllocation {
