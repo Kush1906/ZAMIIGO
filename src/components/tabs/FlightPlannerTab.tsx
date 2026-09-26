@@ -158,7 +158,7 @@ export const FlightPlannerTab: React.FC<FlightPlannerTabProps> = ({ state }) => 
             <div className="flex items-center space-x-2">
               <Sparkles className="h-5 w-5 text-amber-400" />
               <h3 className="font-extrabold text-base tracking-tight text-white font-mono">
-                Bonus Objective: 3-Community Routing & Multi-Leg Circuit Analysis
+                Advanced Optimization: 3-Community Routing & Multi-Leg Circuit Analysis
               </h3>
             </div>
             <span className="px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 font-mono flex items-center gap-1.5">
@@ -167,7 +167,7 @@ export const FlightPlannerTab: React.FC<FlightPlannerTabProps> = ({ state }) => 
           </div>
 
           <p className="text-xs text-slate-300 leading-relaxed">
-            The bonus round extends cargo ops from Webequie across three First Nations communities served from the Nakina Hub (CYQN). Each community route has a distinct maximum payload dictated by round-trip fuel requirements (Cessna 208 Caravan, 3,923 lb operational empty weight):
+            The advanced network simulation extends cargo ops from Webequie across three First Nations communities served from the Nakina Hub (CYQN). Each community route has a distinct maximum payload dictated by round-trip fuel requirements (Cessna 208 Caravan, 3,923 lb operational empty weight):
           </p>
 
           {/* Route payload reference cards */}

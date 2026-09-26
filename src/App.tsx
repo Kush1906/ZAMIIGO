@@ -41,7 +41,7 @@ export const App: React.FC = () => {
 
       if (parseResult.success && parseResult.items.length > 0) {
         // Add a cinematic delay to showcase the premium loader and simulate heavy AI computation
-        await new Promise(resolve => setTimeout(resolve, 1500));
+        await new Promise(resolve => setTimeout(resolve, 700));
         
         const plan = buildPlanFromItems(parseResult.items, stage);
         setPlanState(plan);

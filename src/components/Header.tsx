@@ -85,7 +85,7 @@ export const Header: React.FC<HeaderProps> = ({
                   : 'text-white/70 hover:text-white hover:bg-white/10'
               }`}
             >
-              Bonus Round
+              Advanced Routing
             </button>
           </div>
 
