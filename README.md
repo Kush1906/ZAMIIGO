@@ -4,6 +4,15 @@
 
 > **Route:** Nakina (CYQN) → Webequie (CYWP) | **Aircraft:** Cessna 208 Caravan
 
+---
+
+## 📚 Team Documentation & Guides
+
+- **[Team & AI Architecture Guide](TEAM_AI_GUIDE.md):** Complete technical breakdown, domain invariants, data flow pipeline, and AI assistant prompting rules for team members working with AI.
+- **[UI/UX Designer Guide](UI_UX_DESIGN_GUIDE.md):** Dedicated guide for UI/UX designers mapping every screen/modal to its source file, Tailwind color tokens, typography scales, and print stylesheets.
+
+---
+
 ## What It Does
 
 This application takes a CSV of household grocery orders, packs them into returnable totes, assigns totes to picking carts, and plans multi-departure cargo flights with complete order integrity guarantees.
