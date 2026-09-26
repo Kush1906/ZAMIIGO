@@ -65,7 +65,7 @@ Click **Upload CSV** in the header to import:
 - **Orders CSV** (required) — columns: `order_id`, `household_id`, `weight_lb`, `length_in`, `width_in`, `height_in`, etc.
 - **Flight Capacity CSV** (optional) — columns: `departure_id`, `departure_date`, `available_totes`, `available_payload_lb`, `available_volume_cuft`.
 
-If no capacity CSV is provided, the engine schedules all orders into a single departure on the earliest order date with full Cessna 208 capacity, and displays a clear notice in the flight planner. For multi-departure scheduling, upload a capacity CSV alongside the orders CSV.
+If no capacity CSV is provided, the engine schedules all orders into a single departure on the latest order date with full Cessna 208 capacity so that all orders are date-eligible, and displays a clear notice in the flight planner. For multi-departure scheduling, upload a capacity CSV alongside the orders CSV.
 
 ## Data Files (Supplied)
 
@@ -74,6 +74,7 @@ If no capacity CSV is provided, the engine schedules all orders into a single de
 | `public/data/stage1_orders.csv` | 30-order base case (single departure) |
 | `public/data/stage2_orders.csv` | 120-order multi-day case (3 departures) |
 | `public/data/stage2_flight_capacity.csv` | Departure schedule for Stage 2 |
+| `public/data/bonus_orders.csv` | 150-order 3-community dataset (Webequie, Summer Beaver, Neskantaga) |
 | `public/data/products_reference.csv` | Product catalog with dimensions |
 
 ## Technical Architecture

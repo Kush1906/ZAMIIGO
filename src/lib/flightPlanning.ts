@@ -29,7 +29,9 @@ export const STAGE_2_FLIGHTS: DepartureScheduleDef[] = [
     destination: 'Webequie (CYWP)',
     available_totes: 22,
     available_payload_lb: 703,
-    available_volume_cuft: 45.83,
+    // P1 FIX: Use exact 22 × TOTE_VOLUME_CUFT so the 22nd tote slot is never unreachable
+    // due to floating-point rounding (45.83 < 22 × 2.0833... = 45.8333...).
+    available_volume_cuft: Math.ceil(22 * (3600 / 1728) * 100) / 100, // 45.84
   },
   {
     departure_id: 'DEP-02',
@@ -47,6 +49,33 @@ export const STAGE_2_FLIGHTS: DepartureScheduleDef[] = [
     available_payload_lb: 2877,
     available_volume_cuft: 187.5,
   }
+];
+
+export const BONUS_FLIGHTS: DepartureScheduleDef[] = [
+  {
+    departure_id: 'DEP-BONUS-01',
+    departure_date: '2026-06-10',
+    destination: 'Neskantaga (CYLH)',
+    available_totes: 90,
+    available_payload_lb: 3062, // CYQN -> CYLH 299 mi roundtrip, 861 lb fuel
+    available_volume_cuft: 187.5,
+  },
+  {
+    departure_id: 'DEP-BONUS-02',
+    departure_date: '2026-06-10',
+    destination: 'Summer Beaver (CJV7)',
+    available_totes: 90,
+    available_payload_lb: 2887, // CYQN -> CJV7 384 mi roundtrip, 1036 lb fuel
+    available_volume_cuft: 187.5,
+  },
+  {
+    departure_id: 'DEP-BONUS-03',
+    departure_date: '2026-06-10',
+    destination: 'Webequie (CYWP)',
+    available_totes: 90,
+    available_payload_lb: 2877, // CYQN -> CYWP 389 mi roundtrip, 1046 lb fuel
+    available_volume_cuft: 187.5,
+  },
 ];
 
 export interface CapacityParseResult {
@@ -222,11 +251,15 @@ export function planFlightDepartures(
     totalItemsVolumeCuFt: number; // sum of item volumes (estimate)
     totalTotes: number;
     earliestOrderDate: string;
+    destination: string; // community destination (e.g. "Webequie", "Neskantaga", "Summer Beaver")
   }
 
   const groupMap = new Map<number, OrderGroup>();
 
   for (const order of updatedOrders) {
+    // P0 FIX: Skip held orders (incomplete orders with unpackable items).
+    // They must NOT be added to any flight group — staff must resolve before dispatch.
+    if (order.held_from_flight) continue;
     if (!orderIdToGroup.has(order.order_id)) continue;
     const gid = orderIdToGroup.get(order.order_id)!;
 
@@ -239,6 +272,7 @@ export function planFlightDepartures(
         totalItemsVolumeCuFt: 0,
         totalTotes: 0,
         earliestOrderDate: '9999-99-99',
+        destination: order.destination_community,
       });
     }
     const group = groupMap.get(gid)!;
@@ -270,6 +304,16 @@ export function planFlightDepartures(
     return a.totalTotes - b.totalTotes;
   });
 
+  /**
+   * Normalize a destination string for comparison.
+   * Departure destinations may include airport codes like "Webequie (CYWP)" while
+   * order destination_community is just "Webequie". We strip parenthetical suffixes
+   * and compare case-insensitively.
+   */
+  function normalizeDestination(s: string): string {
+    return s.replace(/\s*\([^)]*\)\s*/g, '').trim().toLowerCase();
+  }
+
   const departures: FlightDeparture[] = [];
   let pendingGroups = [...sortedGroups];
 
@@ -277,6 +321,7 @@ export function planFlightDepartures(
     const sched = schedules[sIdx];
     const depDate = sched.departure_date;
     const isLastDeparture = sIdx === schedules.length - 1;
+    const normalizedDepDest = normalizeDestination(sched.destination);
 
     const depToteIds: string[] = [];
     const depOrderIds: string[] = [];
@@ -290,10 +335,21 @@ export function planFlightDepartures(
 
     for (const group of pendingGroups) {
       // A group is eligible only if ALL its orders were placed on or before this departure
-      const allEligible = group.orders.every(o => o.order_date <= depDate);
-      if (allEligible) {
+      const allDateEligible = group.orders.every(o => o.order_date <= depDate);
+
+      // P0 FIX (unconditional): A group's destination must match the departure destination.
+      // This applies to every schedule — single or multi-community.
+      // Single-community schedules have exactly one normalized destination, so all matching
+      // orders pass automatically. Wrong-destination orders are held as unassigned with a reason.
+      const destMatch = normalizeDestination(group.destination) === normalizedDepDest;
+
+      if (allDateEligible && destMatch) {
         eligibleGroups.push(group);
+      } else if (!destMatch) {
+        // Wrong destination: keep in pending for future departures (or flag at end)
+        futureGroups.push(group);
       } else {
+        // Date not yet eligible
         futureGroups.push(group);
       }
     }
@@ -382,11 +438,17 @@ export function planFlightDepartures(
 
   // Orders with no assigned flight after all departures
   if (pendingGroups.length > 0) {
+    const servedDests = new Set(schedules.map(s => normalizeDestination(s.destination)));
     for (const group of pendingGroups) {
+      const isDestServed = servedDests.has(normalizeDestination(group.destination));
       for (const order of group.orders) {
         if (!order.assigned_flight_id) {
           order.is_rolled_over = true;
-          order.rollover_reason = 'Awaiting a future charter flight — not scheduled in the current departure plan';
+          if (!isDestServed) {
+            order.rollover_reason = `No scheduled departure serving destination "${group.destination}". Unmatched orders held pending route charter.`;
+          } else {
+            order.rollover_reason = order.rollover_reason || 'Awaiting future departure — capacity exceeded on scheduled flights';
+          }
         }
       }
     }

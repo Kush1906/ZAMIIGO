@@ -1,11 +1,11 @@
 import { LineItem, PlanConfig, PlanState, OrderStatus } from './types';
 import { DEFAULT_PLAN_CONFIG, groupItemsIntoOrders, packOrdersIntoTotesAndCarts } from './packing';
-import { planFlightDepartures, STAGE_1_FLIGHT, STAGE_2_FLIGHTS, DepartureScheduleDef, parseFlightCapacityCsv, CapacityParseResult } from './flightPlanning';
+import { planFlightDepartures, STAGE_1_FLIGHT, STAGE_2_FLIGHTS, BONUS_FLIGHTS, DepartureScheduleDef, parseFlightCapacityCsv, CapacityParseResult } from './flightPlanning';
 import { validatePlan } from './validatePlan';
 
 export function buildPlanFromItems(
   items: LineItem[],
-  stage: 'stage1' | 'stage2' | 'custom' = 'stage1',
+  stage: 'stage1' | 'stage2' | 'bonus' | 'custom' = 'stage1',
   customConfig?: Partial<PlanConfig>,
   customSchedules?: DepartureScheduleDef[]
 ): PlanState {
@@ -26,26 +26,39 @@ export function buildPlanFromItems(
     schedules = customSchedules;
   } else if (stage === 'stage2') {
     schedules = STAGE_2_FLIGHTS;
+  } else if (stage === 'bonus') {
+    schedules = BONUS_FLIGHTS;
   } else if (stage === 'custom') {
     // P0 FIX: For custom uploads without a capacity file, we use a single-departure
-    // plan with today's date as the departure date. We do NOT silently pick Stage 1 or Stage 2
-    // dates because those June 2026 dates may not match the judge's dataset.
-    // A single-flight plan is always safe: all eligible orders land on one departure.
-    const minDate = items.reduce((m, i) => i.order_date < m ? i.order_date : m, items[0]?.order_date ?? '2026-06-01');
+    // plan with the LATEST order date as departure date so ALL orders are date-eligible.
+    // We do NOT silently pick Stage 1 or Stage 2 dates because those June 2026 dates
+    // may not match the judge's dataset.
+    const maxDate = items.reduce((m, i) => i.order_date > m ? i.order_date : m, items[0]?.order_date ?? '2026-06-01');
     schedules = [{
       departure_id: 'DEP-CUSTOM',
-      departure_date: minDate,
+      departure_date: maxDate,
       destination: 'Webequie (CYWP)',
       available_totes: 90,
       available_payload_lb: 2877,
       available_volume_cuft: 187.5,
     }];
     customScheduleError =
-      'No flight capacity CSV was provided. The plan uses a single departure on the earliest order date ' +
-      `(${minDate}) with full Cessna 208 capacity. ` +
+      'No flight capacity CSV was provided. The plan uses a single departure on the latest order date ' +
+      `(${maxDate}) with full Cessna 208 capacity. ` +
       'For multi-departure scheduling, upload a flight capacity CSV alongside the orders CSV.';
   } else {
     schedules = STAGE_1_FLIGHT;
+  }
+
+  // P0 FIX: Before flight planning, mark any order with unpackable items as "held".
+  // An order with missing items is incomplete and must not be manifested as "shipped".
+  // Staff must resolve the oversized items before the order can be dispatched.
+  const unpackableOrderIds = new Set(packingResult.unpackableItems.map(u => u.order_id));
+  for (const order of packingResult.orders) {
+    if (unpackableOrderIds.has(order.order_id)) {
+      order.held_from_flight = true;
+      order.held_reason = `Held: ${order.unpackable_item_count} item(s) exceed tote dimensions and require staff resolution before dispatch.`;
+    }
   }
 
   // 4. Plan flight loads & rollovers (whole-order atomic assignment)

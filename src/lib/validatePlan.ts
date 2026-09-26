@@ -164,7 +164,17 @@ export function validatePlan(state: PlanState): ValidationIssue[] {
     for (const ordId of dep.assigned_order_ids) assignedOrderIds.add(ordId);
   }
   for (const order of orders) {
-    if (!assignedOrderIds.has(order.order_id) && !order.is_rolled_over) {
+    if (order.held_from_flight) {
+      // Held orders are intentionally kept off manifests — surface as a WARNING, not ERROR
+      // (the UNPACKABLE_ITEMS error in buildPlan.ts already describes what needs resolving)
+      issues.push({
+        type: 'WARNING',
+        code: 'HELD_ORDER_NOT_DISPATCHED',
+        message: `Order #${order.order_id} (Household #${order.household_id}) is held pending staff resolution and will not appear in any flight manifest. ${order.held_reason ?? ''}`,
+        entityId: order.order_id,
+        tabTarget: 'picking',
+      });
+    } else if (!assignedOrderIds.has(order.order_id) && !order.is_rolled_over) {
       issues.push({
         type: 'ERROR',
         code: 'ORDER_NOT_ASSIGNED_TO_FLIGHT',
@@ -209,6 +219,51 @@ export function validatePlan(state: PlanState): ValidationIssue[] {
       message: `${dupeItemCount} item(s) appear in more than one tote. Each item must be in exactly one tote.`,
       tabTarget: 'picking',
     });
+  }
+
+  // ── 6. Tote Destination Segregation ───────────────────────────────────────────
+  // A tote must never mix items from different destination communities.
+  for (const tote of totes) {
+    const destinations = new Set<string>();
+    for (const ordId of tote.assigned_order_ids) {
+      const order = orders.find(o => o.order_id === ordId);
+      if (order) destinations.add(order.destination_community);
+    }
+    if (destinations.size > 1) {
+      issues.push({
+        type: 'ERROR',
+        code: 'TOTE_MIXED_DESTINATIONS',
+        message: `${tote.tote_code}: Contains orders for multiple destinations (${Array.from(destinations).join(', ')}). Each tote must serve a single community.`,
+        entityId: tote.tote_id,
+        tabTarget: 'picking',
+      });
+    }
+  }
+
+  // ── 7. Flight-Order Destination Match ─────────────────────────────────────────
+  // An order must never be loaded onto a departure bound for a different community.
+  function normalizeDest(s: string): string {
+    return s.replace(/\s*\([^)]*\)\s*/g, '').trim().toLowerCase();
+  }
+  const uniqueFlightDests = new Set(departures.map(d => normalizeDest(d.destination)));
+  const multiDest = uniqueFlightDests.size > 1;
+
+  if (multiDest) {
+    for (const dep of departures) {
+      const depDest = normalizeDest(dep.destination);
+      for (const ordId of dep.assigned_order_ids) {
+        const order = orders.find(o => o.order_id === ordId);
+        if (order && normalizeDest(order.destination_community) !== depDest) {
+          issues.push({
+            type: 'ERROR',
+            code: 'ORDER_WRONG_DESTINATION_FLIGHT',
+            message: `Order #${ordId} (${order.destination_community}) loaded on ${dep.departure_id} bound for ${dep.destination}. Orders must only fly to their own community.`,
+            entityId: ordId,
+            tabTarget: 'flight',
+          });
+        }
+      }
+    }
   }
 
   return issues;
