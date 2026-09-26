@@ -25,11 +25,16 @@ export const App: React.FC = () => {
   const [customSchedules, setCustomSchedules] = useState<DepartureScheduleDef[] | undefined>();
 
   // Load dataset
-  const loadDataset = async (stage: 'stage1' | 'stage2') => {
+  const loadDataset = async (stage: 'stage1' | 'stage2' | 'bonus') => {
     setLoading(true);
     setCustomSchedules(undefined);
     try {
-      const csvPath = stage === 'stage1' ? '/data/stage1_orders.csv' : '/data/stage2_orders.csv';
+      const csvPath =
+        stage === 'stage1'
+          ? '/data/stage1_orders.csv'
+          : stage === 'stage2'
+          ? '/data/stage2_orders.csv'
+          : '/data/bonus_orders.csv';
       const response = await fetch(csvPath);
       const csvText = await response.text();
       const parseResult = parseOrdersCsv(csvText);

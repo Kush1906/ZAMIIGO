@@ -6,7 +6,7 @@ interface HeaderProps {
   state: PlanState;
   activeTab: 'entry' | 'picking' | 'flight';
   setActiveTab: (tab: 'entry' | 'picking' | 'flight') => void;
-  onSelectStage: (stage: 'stage1' | 'stage2') => void;
+  onSelectStage: (stage: 'stage1' | 'stage2' | 'bonus') => void;
   onOpenUpload: () => void;
   onToggleHandheld: () => void;
   onOpenSettings: () => void;
@@ -46,7 +46,9 @@ export const Header: React.FC<HeaderProps> = ({
               <div className="text-xs text-zamiigo-ice flex items-center space-x-1 font-mono mt-0.5">
                 <span>CYQN (Nakina)</span>
                 <span>➔</span>
-                <span className="text-zamiigo-amber font-medium">CYWP (Webequie)</span>
+                <span className="text-zamiigo-amber font-medium">
+                  {state.activeStage === 'bonus' ? 'CYWP / CJV7 / CYLH (3 Hubs)' : 'CYWP (Webequie)'}
+                </span>
                 <span className="text-slate-900/40">|</span>
                 <span className="text-slate-900/80">Cessna 208 Caravan</span>
               </div>
@@ -74,6 +76,16 @@ export const Header: React.FC<HeaderProps> = ({
               }`}
             >
               Stage 2 (120 Orders Multi-Day)
+            </button>
+            <button
+              onClick={() => onSelectStage('bonus')}
+              className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                state.activeStage === 'bonus'
+                  ? 'bg-amber-400 text-slate-900 shadow-sm font-bold'
+                  : 'text-slate-900/70 hover:text-slate-900 hover:bg-white/10'
+              }`}
+            >
+              Bonus (3 Communities)
             </button>
             <div className="w-px h-4 bg-white/20 mx-2"></div>
             <button

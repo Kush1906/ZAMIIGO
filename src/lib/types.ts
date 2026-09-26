@@ -126,6 +126,46 @@ export interface ValidationIssue {
   tabTarget?: 'entry' | 'picking' | 'flight';
 }
 
+export interface RouteSpec {
+  community: string;
+  airport_code: string;
+  one_way_nm: number;
+  statute_miles_roundtrip: number;
+  flight_hours: number;
+  estimated_fuel_lb: number;
+  available_payload_lb: number;
+}
+
+export const COMMUNITY_ROUTE_SPECS: Record<string, RouteSpec> = {
+  'Webequie': {
+    community: 'Webequie',
+    airport_code: 'CYWP',
+    one_way_nm: 169,
+    statute_miles_roundtrip: 389,
+    flight_hours: 2.49,
+    estimated_fuel_lb: 1046,
+    available_payload_lb: 2877,
+  },
+  'Summer Beaver': {
+    community: 'Summer Beaver',
+    airport_code: 'CJV7',
+    one_way_nm: 167,
+    statute_miles_roundtrip: 384,
+    flight_hours: 2.46,
+    estimated_fuel_lb: 1036,
+    available_payload_lb: 2887,
+  },
+  'Neskantaga': {
+    community: 'Neskantaga',
+    airport_code: 'CYLH',
+    one_way_nm: 130,
+    statute_miles_roundtrip: 299,
+    flight_hours: 1.96,
+    estimated_fuel_lb: 861,
+    available_payload_lb: 3062,
+  },
+};
+
 export interface PlanState {
   rawItems: LineItem[];
   orders: HouseholdOrder[];
@@ -135,7 +175,7 @@ export interface PlanState {
   unpackableItems: UnpackableItem[]; // items that could not be packed — retained in state
   config: PlanConfig;
   issues: ValidationIssue[];
-  activeStage: 'stage1' | 'stage2' | 'custom';
+  activeStage: 'stage1' | 'stage2' | 'bonus' | 'custom';
   customScheduleError?: string; // set when a multi-flight custom upload lacks a capacity CSV
   lastUpdated: number;
 }

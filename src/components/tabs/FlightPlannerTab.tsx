@@ -143,6 +143,66 @@ export const FlightPlannerTab: React.FC<FlightPlannerTabProps> = ({ state }) => 
         );
       })()}
 
+      {/* Bonus Objective: Multi-Community Route Payload & Triangular Flight Analysis */}
+      {state.activeStage === 'bonus' && (
+        <div className="bg-slate-900 text-white rounded-2xl p-5 shadow-lg border border-zamiigo-teal/50 space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-700/50 pb-3">
+            <div className="flex items-center space-x-2">
+              <Sparkles className="h-5 w-5 text-amber-400" />
+              <h3 className="font-extrabold text-base tracking-tight text-white font-mono">
+                Sponsor Bonus Objective: 3-Community Route & Triangular Optimization
+              </h3>
+            </div>
+            <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-400/20 text-amber-300 border border-amber-400/30 font-mono">
+              Nakina Hub (CYQN)
+            </span>
+          </div>
+
+          <p className="text-xs text-slate-300 leading-relaxed">
+            The Cessna 208 Caravan serves 3 Northern First Nations with route-specific payload allowances (fuel deducted from 3,923 lb operating limit):
+          </p>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div className="bg-white/10 rounded-xl p-3 border border-white/10 text-xs">
+              <div className="font-bold text-amber-300 font-mono">Neskantaga (CYLH)</div>
+              <div className="text-slate-300 text-[11px] mt-0.5 font-mono">299 mi RT | 1.96 hrs | 861 lb fuel</div>
+              <div className="text-white font-mono font-bold mt-1 text-sm">3,062 lb Payload</div>
+            </div>
+            <div className="bg-white/10 rounded-xl p-3 border border-white/10 text-xs">
+              <div className="font-bold text-emerald-300 font-mono">Summer Beaver (CJV7)</div>
+              <div className="text-slate-300 text-[11px] mt-0.5 font-mono">384 mi RT | 2.46 hrs | 1,036 lb fuel</div>
+              <div className="text-white font-mono font-bold mt-1 text-sm">2,887 lb Payload</div>
+            </div>
+            <div className="bg-white/10 rounded-xl p-3 border border-white/10 text-xs">
+              <div className="font-bold text-sky-300 font-mono">Webequie (CYWP)</div>
+              <div className="text-slate-300 text-[11px] mt-0.5 font-mono">389 mi RT | 2.49 hrs | 1,046 lb fuel</div>
+              <div className="text-white font-mono font-bold mt-1 text-sm">2,877 lb Payload</div>
+            </div>
+          </div>
+
+          <div className="bg-emerald-950/80 rounded-xl p-4 border border-emerald-500/30 text-xs space-y-2">
+            <div className="flex items-center justify-between font-mono font-bold text-emerald-400 text-xs">
+              <span>✈️ Triangular Circuit vs. Separate Direct Flights Analysis</span>
+              <span className="text-amber-300">44% Flying Time Reduction</span>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-[11px] font-mono">
+              <div className="bg-white/5 p-2.5 rounded-lg border border-white/10">
+                <div className="text-slate-400 font-bold">Option A: 2 Separate Direct Flights</div>
+                <div className="text-slate-300 mt-1">• Distance: 299 + 384 = <strong>683 statute miles</strong></div>
+                <div className="text-slate-300">• Flight Time: 1.96 + 2.46 = <strong>4.42 flight hours</strong></div>
+                <div className="text-slate-300">• Fuel Burn: 861 + 1,036 = <strong>1,897 lb fuel</strong></div>
+              </div>
+              <div className="bg-emerald-900/60 p-2.5 rounded-lg border border-emerald-500/40">
+                <div className="text-emerald-300 font-bold">Option B: Multi-Leg Triangular Circuit (CYQN ➔ CYLH ➔ CJV7 ➔ CYQN)</div>
+                <div className="text-emerald-200 mt-1">• Distance: <strong>420 statute miles</strong> (saves 263 mi)</div>
+                <div className="text-emerald-200">• Flight Time: <strong>2.47 flight hours</strong> (saves 1.95 hrs!)</div>
+                <div className="text-emerald-200">• Combined Cargo: <strong>900 lb</strong> fits easily within circuit initial payload</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Flight Capacity KPIs & Binding Constraint Analysis */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         {/* Payload KPI */}

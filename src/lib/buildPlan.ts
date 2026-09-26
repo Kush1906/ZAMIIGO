@@ -1,11 +1,11 @@
 import { LineItem, PlanConfig, PlanState, OrderStatus } from './types';
 import { DEFAULT_PLAN_CONFIG, groupItemsIntoOrders, packOrdersIntoTotesAndCarts } from './packing';
-import { planFlightDepartures, STAGE_1_FLIGHT, STAGE_2_FLIGHTS, DepartureScheduleDef, parseFlightCapacityCsv, CapacityParseResult } from './flightPlanning';
+import { planFlightDepartures, STAGE_1_FLIGHT, STAGE_2_FLIGHTS, BONUS_FLIGHTS, DepartureScheduleDef, parseFlightCapacityCsv, CapacityParseResult } from './flightPlanning';
 import { validatePlan } from './validatePlan';
 
 export function buildPlanFromItems(
   items: LineItem[],
-  stage: 'stage1' | 'stage2' | 'custom' = 'stage1',
+  stage: 'stage1' | 'stage2' | 'bonus' | 'custom' = 'stage1',
   customConfig?: Partial<PlanConfig>,
   customSchedules?: DepartureScheduleDef[]
 ): PlanState {
@@ -26,6 +26,8 @@ export function buildPlanFromItems(
     schedules = customSchedules;
   } else if (stage === 'stage2') {
     schedules = STAGE_2_FLIGHTS;
+  } else if (stage === 'bonus') {
+    schedules = BONUS_FLIGHTS;
   } else if (stage === 'custom') {
     // P0 FIX: For custom uploads without a capacity file, we use a single-departure
     // plan with today's date as the departure date. We do NOT silently pick Stage 1 or Stage 2

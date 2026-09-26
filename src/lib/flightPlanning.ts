@@ -49,6 +49,33 @@ export const STAGE_2_FLIGHTS: DepartureScheduleDef[] = [
   }
 ];
 
+export const BONUS_FLIGHTS: DepartureScheduleDef[] = [
+  {
+    departure_id: 'DEP-BONUS-01',
+    departure_date: '2026-06-10',
+    destination: 'Neskantaga (CYLH)',
+    available_totes: 90,
+    available_payload_lb: 3062, // CYQN -> CYLH 299 mi roundtrip, 861 lb fuel
+    available_volume_cuft: 187.5,
+  },
+  {
+    departure_id: 'DEP-BONUS-02',
+    departure_date: '2026-06-10',
+    destination: 'Summer Beaver (CJV7)',
+    available_totes: 90,
+    available_payload_lb: 2887, // CYQN -> CJV7 384 mi roundtrip, 1036 lb fuel
+    available_volume_cuft: 187.5,
+  },
+  {
+    departure_id: 'DEP-BONUS-03',
+    departure_date: '2026-06-10',
+    destination: 'Webequie (CYWP)',
+    available_totes: 90,
+    available_payload_lb: 2877, // CYQN -> CYWP 389 mi roundtrip, 1046 lb fuel
+    available_volume_cuft: 187.5,
+  },
+];
+
 export interface CapacityParseResult {
   schedules: DepartureScheduleDef[];
   errors: string[];
