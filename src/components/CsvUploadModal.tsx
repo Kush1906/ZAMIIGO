@@ -45,18 +45,18 @@ export const CsvUploadModal: React.FC<CsvUploadModalProps> = ({ isOpen, onClose,
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm no-print">
-      <div className="bg-slate-900 border border-slate-800 rounded-3xl w-full max-w-2xl overflow-hidden shadow-2xl animate-in fade-in zoom-in-95 duration-150">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-50 backdrop-blur-sm no-print">
+      <div className="bg-white border border-slate-200 rounded-3xl w-full max-w-2xl overflow-hidden shadow-2xl animate-in fade-in zoom-in-95 duration-150">
         
         {/* Header */}
-        <div className="p-5 border-b border-slate-800 flex items-center justify-between">
+        <div className="p-5 border-b border-slate-200 flex items-center justify-between">
           <div className="flex items-center space-x-2">
-            <Upload className="h-5 w-5 text-sky-400" />
-            <h3 className="font-bold text-white text-base">Import Grocery Orders CSV</h3>
+            <Upload className="h-5 w-5 text-zamiigo-teal" />
+            <h3 className="font-bold text-slate-900 text-base">Import Grocery Orders CSV</h3>
           </div>
           <button
             onClick={onClose}
-            className="p-1 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-white"
+            className="p-1 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-slate-900"
           >
             <X className="h-5 w-5" />
           </button>
@@ -76,14 +76,14 @@ export const CsvUploadModal: React.FC<CsvUploadModalProps> = ({ isOpen, onClose,
             onDrop={handleDrop}
             className={`border-2 border-dashed rounded-2xl p-8 text-center transition-all ${
               dragActive
-                ? 'border-sky-500 bg-sky-950/30'
-                : 'border-slate-700 bg-slate-950/50 hover:border-slate-600'
+                ? 'border-zamiigo-teal bg-zamiigo-ice/30'
+                : 'border-slate-300 bg-slate-50 hover:border-slate-600'
             }`}
           >
             <FileText className="h-10 w-10 text-slate-400 mx-auto mb-3" />
-            <div className="text-sm font-semibold text-slate-200">
+            <div className="text-sm font-semibold text-slate-800">
               Drag & Drop your CSV file here, or{' '}
-              <label className="text-sky-400 hover:text-sky-300 cursor-pointer underline">
+              <label className="text-zamiigo-teal hover:text-sky-300 cursor-pointer underline">
                 browse files
                 <input
                   type="file"
@@ -93,32 +93,32 @@ export const CsvUploadModal: React.FC<CsvUploadModalProps> = ({ isOpen, onClose,
                 />
               </label>
             </div>
-            <p className="text-xs text-slate-500 mt-1">Accepts standard Zamiigo / Superstore batch CSV formats</p>
+            <p className="text-xs text-slate-400 mt-1">Accepts standard Zamiigo / Superstore batch CSV formats</p>
           </div>
 
           {/* Parse Result Feedback */}
           {parseResult && (
             <div className={`p-4 rounded-xl border text-xs space-y-2 ${
               parseResult.success
-                ? 'bg-emerald-950/40 border-emerald-800 text-emerald-300'
-                : 'bg-rose-950/40 border-rose-800 text-rose-300'
+                ? 'bg-emerald-50 border-emerald-200 text-emerald-700'
+                : 'bg-rose-50 border-rose-200 text-rose-700'
             }`}>
               <div className="flex items-center space-x-2 font-bold font-mono">
                 {parseResult.success ? (
                   <>
-                    <CheckCircle className="h-4 w-4 text-emerald-400" />
+                    <CheckCircle className="h-4 w-4 text-emerald-600" />
                     <span>Valid Dataset: {fileName}</span>
                   </>
                 ) : (
                   <>
-                    <AlertTriangle className="h-4 w-4 text-rose-400" />
+                    <AlertTriangle className="h-4 w-4 text-rose-600" />
                     <span>Import Validation Errors</span>
                   </>
                 )}
               </div>
 
               {parseResult.success ? (
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1 font-mono text-slate-200">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1 font-mono text-slate-800">
                   <div>Rows: <strong>{parseResult.stats.rowCount}</strong></div>
                   <div>Orders: <strong>{parseResult.stats.orderCount}</strong></div>
                   <div>Households: <strong>{parseResult.stats.householdCount}</strong></div>
@@ -133,7 +133,7 @@ export const CsvUploadModal: React.FC<CsvUploadModalProps> = ({ isOpen, onClose,
               )}
 
               {parseResult.warnings.length > 0 && (
-                <div className="text-[11px] text-amber-300 pt-1 border-t border-slate-800">
+                <div className="text-[11px] text-amber-700 pt-1 border-t border-slate-200">
                   <strong>Notices:</strong> {parseResult.warnings.slice(0, 3).join(' | ')}
                 </div>
               )}
@@ -142,17 +142,17 @@ export const CsvUploadModal: React.FC<CsvUploadModalProps> = ({ isOpen, onClose,
         </div>
 
         {/* Footer */}
-        <div className="p-4 bg-slate-950 border-t border-slate-800 flex items-center justify-end space-x-3">
+        <div className="p-4 bg-slate-50 border-t border-slate-200 flex items-center justify-end space-x-3">
           <button
             onClick={onClose}
-            className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-400 hover:text-white"
+            className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-400 hover:text-slate-900"
           >
             Cancel
           </button>
           <button
             onClick={handleApply}
             disabled={!parseResult || !parseResult.success}
-            className="px-5 py-2 rounded-xl bg-sky-600 hover:bg-sky-500 disabled:opacity-50 text-white text-xs font-semibold shadow-sm transition"
+            className="px-5 py-2 rounded-xl bg-zamiigo-teal hover:bg-zamiigo-teal disabled:opacity-50 text-slate-900 text-xs font-semibold shadow-sm transition"
           >
             Load into Engine
           </button>

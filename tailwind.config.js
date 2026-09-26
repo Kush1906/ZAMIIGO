@@ -6,17 +6,26 @@ export default {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        sans: ['Inter', 'system-ui', 'sans-serif'],
+      },
       colors: {
         zamiigo: {
-          50: '#f0f9ff',
-          100: '#e0f2fe',
-          200: '#bae6fd',
-          500: '#0284c7',
-          600: '#0369a1',
-          700: '#075985',
-          800: '#0c4a6e',
-          900: '#082f49',
-          950: '#031726'
+          teal: {
+            DEFAULT: '#073B4C',
+            dark: '#003845',
+            light: '#115d75',
+          },
+          amber: {
+            DEFAULT: '#F0A500',
+            hover: '#d99200',
+            light: '#fff3cd',
+          },
+          ice: {
+            DEFAULT: '#EEF4F8',
+            dark: '#d1ecf1',
+            canvas: '#F7F9FA',
+          }
         }
       }
     },

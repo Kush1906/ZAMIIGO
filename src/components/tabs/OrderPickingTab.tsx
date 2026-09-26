@@ -44,12 +44,12 @@ export const OrderPickingTab: React.FC<OrderPickingTabProps> = ({
     <div className="space-y-6">
 
       {/* Top Controls & Metrics */}
-      <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-sm">
+      <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
           <div>
             <div className="flex items-center space-x-2">
-              <h2 className="text-xl font-bold text-white tracking-tight">Returnable Tote & Cart Optimization</h2>
-              <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-sky-950 text-sky-400 border border-sky-800">
+              <h2 className="text-xl font-bold text-slate-900 tracking-tight">Returnable Tote & Cart Optimization</h2>
+              <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-zamiigo-ice text-zamiigo-teal border border-zamiigo-teal/20">
                 Stage {state.activeStage === 'stage1' ? '1 (Base)' : '2 (Multi-Day)'}
               </span>
             </div>
@@ -61,14 +61,14 @@ export const OrderPickingTab: React.FC<OrderPickingTabProps> = ({
           <div className="flex items-center space-x-3">
             <button
               onClick={onOpenHandheld}
-              className="flex items-center space-x-2 px-3.5 py-2 rounded-xl bg-sky-600 hover:bg-sky-500 text-white text-xs font-semibold shadow-sm transition"
+              className="flex items-center space-x-2 px-3.5 py-2 rounded-xl bg-zamiigo-teal hover:bg-zamiigo-teal text-slate-900 text-xs font-semibold shadow-sm transition"
             >
               <ShoppingBag className="h-4 w-4" />
               <span>Launch Handheld Scanner</span>
             </button>
             <button
               onClick={handlePrint}
-              className="flex items-center space-x-2 px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-semibold transition"
+              className="flex items-center space-x-2 px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-300 text-xs font-semibold transition"
             >
               <Printer className="h-4 w-4" />
               <span>Print Pick Lists</span>
@@ -78,54 +78,54 @@ export const OrderPickingTab: React.FC<OrderPickingTabProps> = ({
 
         {/* Operational Stats Grid */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-5">
-          <div className="p-3 rounded-xl bg-slate-950 border border-slate-800">
+          <div className="p-3 rounded-xl bg-slate-50 border border-slate-200">
             <div className="text-xs text-slate-400">Total Returnable Totes</div>
-            <div className="text-xl font-bold text-sky-400 mt-0.5 font-mono">
-              {state.totes.length} <span className="text-xs font-normal text-slate-500">totes</span>
+            <div className="text-xl font-bold text-zamiigo-teal mt-0.5 font-mono">
+              {state.totes.length} <span className="text-xs font-normal text-slate-400">totes</span>
             </div>
-            <div className="text-[10px] text-slate-500 mt-1">From {state.orders.length} household orders</div>
+            <div className="text-[10px] text-slate-400 mt-1">From {state.orders.length} household orders</div>
           </div>
 
-          <div className="p-3 rounded-xl bg-slate-950 border border-slate-800">
+          <div className="p-3 rounded-xl bg-slate-50 border border-slate-200">
             <div className="text-xs text-slate-400">Oversized Split Totes</div>
-            <div className="text-xl font-bold text-amber-400 mt-0.5 font-mono flex items-center space-x-1.5">
+            <div className="text-xl font-bold text-amber-600 mt-0.5 font-mono flex items-center space-x-1.5">
               <Split className="h-4 w-4" />
               <span>{splitTotesCount}</span>
             </div>
-            <div className="text-[10px] text-slate-500 mt-1">Orders exceeding 3,600 cu in</div>
+            <div className="text-[10px] text-slate-400 mt-1">Orders exceeding 3,600 cu in</div>
           </div>
 
-          <div className="p-3 rounded-xl bg-slate-950 border border-slate-800">
+          <div className="p-3 rounded-xl bg-slate-50 border border-slate-200">
             <div className="text-xs text-slate-400">Average Volume Fill</div>
-            <div className="text-xl font-bold text-emerald-400 mt-0.5 font-mono">
+            <div className="text-xl font-bold text-emerald-600 mt-0.5 font-mono">
               {avgToteFill}%
             </div>
-            <div className="text-[10px] text-slate-500 mt-1">Estimated packing volume</div>
+            <div className="text-[10px] text-slate-400 mt-1">Estimated packing volume</div>
           </div>
 
-          <div className="p-3 rounded-xl bg-slate-950 border border-slate-800">
+          <div className="p-3 rounded-xl bg-slate-50 border border-slate-200">
             <div className="text-xs text-slate-400 flex items-center justify-between">
               <span>Configured Carts</span>
-              <span className="text-[10px] text-sky-400">({state.config.maxTotesPerCart} totes/cart)</span>
+              <span className="text-[10px] text-zamiigo-teal">({state.config.maxTotesPerCart} totes/cart)</span>
             </div>
             <div className="text-xl font-bold text-purple-400 mt-0.5 font-mono">
-              {state.carts.length} <span className="text-xs font-normal text-slate-500">carts</span>
+              {state.carts.length} <span className="text-xs font-normal text-slate-400">carts</span>
             </div>
-            <div className="text-[10px] text-slate-500 mt-1">Sequential store walking paths</div>
+            <div className="text-[10px] text-slate-400 mt-1">Sequential store walking paths</div>
           </div>
         </div>
 
         {/* Warning notification banner if error exists */}
         {moveError && (
-          <div className="mt-4 p-3 rounded-xl bg-rose-950/80 border border-rose-800 text-rose-300 text-xs flex items-center space-x-2">
-            <AlertTriangle className="h-4 w-4 shrink-0 text-rose-400" />
+          <div className="mt-4 p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs flex items-center space-x-2">
+            <AlertTriangle className="h-4 w-4 shrink-0 text-rose-600" />
             <span><strong>Movement Blocked:</strong> {moveError}</span>
           </div>
         )}
       </div>
 
       {/* Cart Selector Navigation Tabs */}
-      <div className="flex items-center justify-between border-b border-slate-800 pb-2">
+      <div className="flex items-center justify-between border-b border-slate-200 pb-2">
         <div className="flex items-center space-x-2 overflow-x-auto py-1">
           {state.carts.map(cart => (
             <button
@@ -133,13 +133,13 @@ export const OrderPickingTab: React.FC<OrderPickingTabProps> = ({
               onClick={() => setSelectedCartId(cart.cart_id)}
               className={`px-3.5 py-2 rounded-xl text-xs font-semibold flex items-center space-x-2 transition ${
                 selectedCart?.cart_id === cart.cart_id
-                  ? 'bg-sky-600 text-white shadow-sm'
-                  : 'bg-slate-900 text-slate-400 hover:text-slate-200 border border-slate-800'
+                  ? 'bg-zamiigo-teal text-slate-900 shadow-sm'
+                  : 'bg-white text-slate-400 hover:text-slate-800 border border-slate-200'
               }`}
             >
               <span>{cart.cart_code}</span>
               <span className={`px-1.5 py-0.2 rounded-full text-[10px] font-mono ${
-                selectedCart?.cart_id === cart.cart_id ? 'bg-sky-700 text-white' : 'bg-slate-800 text-slate-400'
+                selectedCart?.cart_id === cart.cart_id ? 'bg-sky-700 text-slate-900' : 'bg-slate-100 text-slate-400'
               }`}>
                 {cart.tote_ids.length} totes
               </span>
@@ -153,7 +153,7 @@ export const OrderPickingTab: React.FC<OrderPickingTabProps> = ({
           <select
             value={state.config.maxTotesPerCart}
             onChange={e => onUpdateCartToteLimit(parseInt(e.target.value, 10))}
-            className="bg-slate-900 border border-slate-800 rounded-lg px-2.5 py-1 text-slate-200 focus:outline-none focus:ring-1 focus:ring-sky-500"
+            className="bg-white border border-slate-200 rounded-lg px-2.5 py-1 text-slate-800 focus:outline-none focus:ring-1 focus:ring-zamiigo-teal"
           >
             <option value={3}>3 Totes</option>
             <option value={4}>4 Totes</option>
@@ -167,18 +167,18 @@ export const OrderPickingTab: React.FC<OrderPickingTabProps> = ({
       {/* Active Cart & Totes Breakdown */}
       {selectedCart && (
         <div className="space-y-4">
-          <div className="flex items-center justify-between bg-slate-900/60 p-3 rounded-xl border border-slate-800 text-xs">
+          <div className="flex items-center justify-between bg-white/60 p-3 rounded-xl border border-slate-200 text-xs">
             <div className="flex items-center space-x-3">
-              <span className="font-bold text-white text-sm font-mono">{selectedCart.cart_code}</span>
+              <span className="font-bold text-slate-900 text-sm font-mono">{selectedCart.cart_code}</span>
               <span className="text-slate-400">|</span>
-              <span className="text-slate-300 font-mono">Weight: <strong>{selectedCart.total_weight_lb} lb</strong></span>
+              <span className="text-slate-700 font-mono">Weight: <strong>{selectedCart.total_weight_lb} lb</strong></span>
               <span className="text-slate-400">|</span>
-              <span className="text-slate-300 font-mono">Total Items: <strong>{selectedCart.total_items}</strong></span>
+              <span className="text-slate-700 font-mono">Total Items: <strong>{selectedCart.total_items}</strong></span>
               <span className="text-slate-400">|</span>
-              <span className="text-slate-300">Households: <strong>{selectedCart.household_ids.map(h => `#${h}`).join(', ')}</strong></span>
+              <span className="text-slate-700">Households: <strong>{selectedCart.household_ids.map(h => `#${h}`).join(', ')}</strong></span>
             </div>
-            <div className="text-[11px] text-slate-500 flex items-center space-x-1">
-              <Info className="h-3.5 w-3.5 text-sky-400" />
+            <div className="text-[11px] text-slate-400 flex items-center space-x-1">
+              <Info className="h-3.5 w-3.5 text-zamiigo-teal" />
               <span>All totes for any shared order reside on this cart</span>
             </div>
           </div>
@@ -191,20 +191,20 @@ export const OrderPickingTab: React.FC<OrderPickingTabProps> = ({
               return (
                 <div
                   key={tote.tote_id}
-                  className="bg-slate-900 border border-slate-800 rounded-2xl p-4 space-y-3 hover:border-slate-700 transition-all flex flex-col justify-between"
+                  className="bg-white border border-slate-200 rounded-2xl p-4 space-y-3 hover:border-slate-300 transition-all flex flex-col justify-between"
                 >
                   <div>
                     {/* Tote Header */}
                     <div className="flex items-center justify-between">
                       <div className="flex items-center space-x-2">
-                        <div className="p-2 rounded-lg bg-sky-950/80 border border-sky-800 text-sky-400">
+                        <div className="p-2 rounded-lg bg-zamiigo-ice/80 border border-zamiigo-teal/20 text-zamiigo-teal">
                           <Package className="h-4 w-4" />
                         </div>
                         <div>
-                          <div className="font-bold text-white font-mono flex items-center space-x-2">
+                          <div className="font-bold text-slate-900 font-mono flex items-center space-x-2">
                             <span>{tote.tote_code}</span>
                             {tote.is_oversized_split && (
-                              <span className="text-[10px] px-1.5 py-0.2 rounded bg-amber-950 text-amber-300 border border-amber-800">
+                              <span className="text-[10px] px-1.5 py-0.2 rounded bg-amber-50 text-amber-700 border border-amber-200">
                                 Part {tote.split_part_index}/{tote.split_total_parts}
                               </span>
                             )}
@@ -220,7 +220,7 @@ export const OrderPickingTab: React.FC<OrderPickingTabProps> = ({
                         <select
                           value={tote.assigned_cart_id || ''}
                           onChange={e => handleToteCartChange(tote.tote_id, e.target.value)}
-                          className="text-[11px] bg-slate-950 border border-slate-800 rounded-lg px-2 py-1 text-slate-300 focus:outline-none focus:ring-1 focus:ring-sky-500"
+                          className="text-[11px] bg-slate-50 border border-slate-200 rounded-lg px-2 py-1 text-slate-700 focus:outline-none focus:ring-1 focus:ring-zamiigo-teal"
                           title="Reassign tote to another cart"
                         >
                           {state.carts.map(c => (
@@ -236,26 +236,26 @@ export const OrderPickingTab: React.FC<OrderPickingTabProps> = ({
                     <div className="space-y-1.5 pt-2">
                       <div className="flex items-center justify-between text-xs font-mono">
                         <span className="text-slate-400">Volume Fill (Est.)</span>
-                        <span className={tote.volume_fill_pct > 90 ? 'text-amber-400 font-bold' : 'text-slate-200'}>
+                        <span className={tote.volume_fill_pct > 90 ? 'text-amber-600 font-bold' : 'text-slate-800'}>
                           {tote.volume_fill_pct}% ({tote.total_volume_cuin} cu in)
                         </span>
                       </div>
-                      <div className="w-full bg-slate-950 rounded-full h-2 overflow-hidden border border-slate-800">
+                      <div className="w-full bg-slate-50 rounded-full h-2 overflow-hidden border border-slate-200">
                         <div
                           className={`h-full rounded-full transition-all ${
-                            tote.volume_fill_pct > 90 ? 'bg-amber-500' : 'bg-sky-500'
+                            tote.volume_fill_pct > 90 ? 'bg-amber-500' : 'bg-zamiigo-teal'
                           }`}
                           style={{ width: `${Math.min(100, tote.volume_fill_pct)}%` }}
                         />
                       </div>
-                      <div className="flex items-center justify-between text-[11px] text-slate-500 font-mono">
-                        <span>Weight: <strong className="text-slate-300">{tote.total_weight_lb} lb</strong></span>
-                        <span>Items: <strong className="text-slate-300">{tote.items.length}</strong></span>
+                      <div className="flex items-center justify-between text-[11px] text-slate-400 font-mono">
+                        <span>Weight: <strong className="text-slate-700">{tote.total_weight_lb} lb</strong></span>
+                        <span>Items: <strong className="text-slate-700">{tote.items.length}</strong></span>
                       </div>
                     </div>
 
                     {/* Packed Items Preview */}
-                    <div className="mt-3 pt-3 border-t border-slate-800/80">
+                    <div className="mt-3 pt-3 border-t border-slate-200/80">
                       <div className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-1.5 font-mono">
                         Packed Items:
                       </div>
@@ -263,12 +263,12 @@ export const OrderPickingTab: React.FC<OrderPickingTabProps> = ({
                         {tote.items.map((item, idx) => (
                           <div
                             key={item.id}
-                            className="text-[11px] flex items-center justify-between py-0.5 text-slate-300 hover:text-white"
+                            className="text-[11px] flex items-center justify-between py-0.5 text-slate-700 hover:text-slate-900"
                           >
                             <span className="truncate pr-2">
                               {idx + 1}. {item.product_name}
                             </span>
-                            <span className="text-[10px] text-slate-500 font-mono shrink-0">
+                            <span className="text-[10px] text-slate-400 font-mono shrink-0">
                               HH#{item.household_id} ({item.weight_lb}lb)
                             </span>
                           </div>
@@ -277,7 +277,7 @@ export const OrderPickingTab: React.FC<OrderPickingTabProps> = ({
                     </div>
                   </div>
 
-                  <div className="pt-2 text-[10px] text-slate-500 text-center font-mono border-t border-slate-800/60">
+                  <div className="pt-2 text-[10px] text-slate-400 text-center font-mono border-t border-slate-200/60">
                     Working envelope: 23.5"×14"×11" (3,600 cu in)
                   </div>
                 </div>
@@ -286,10 +286,10 @@ export const OrderPickingTab: React.FC<OrderPickingTabProps> = ({
           </div>
 
           {/* Printable Pick List Table (Active Cart) */}
-          <div className="mt-8 bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-sm">
-            <div className="p-4 border-b border-slate-800 flex items-center justify-between">
+          <div className="mt-8 bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
+            <div className="p-4 border-b border-slate-200 flex items-center justify-between">
               <div>
-                <h3 className="font-bold text-white text-sm font-mono">
+                <h3 className="font-bold text-slate-900 text-sm font-mono">
                   Pick List: {selectedCart.cart_code} ({selectedCart.total_items} items)
                 </h3>
                 <p className="text-xs text-slate-400 mt-0.5">
@@ -298,7 +298,7 @@ export const OrderPickingTab: React.FC<OrderPickingTabProps> = ({
               </div>
               <button
                 onClick={handlePrint}
-                className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold flex items-center space-x-1.5 transition"
+                className="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold flex items-center space-x-1.5 transition"
               >
                 <Printer className="h-3.5 w-3.5" />
                 <span>Print This Cart</span>
@@ -307,7 +307,7 @@ export const OrderPickingTab: React.FC<OrderPickingTabProps> = ({
 
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs">
-                <thead className="bg-slate-950 text-slate-400 font-mono uppercase tracking-wider border-b border-slate-800">
+                <thead className="bg-slate-50 text-slate-400 font-mono uppercase tracking-wider border-b border-slate-200">
                   <tr>
                     <th className="py-2.5 px-3 w-8">Pick</th>
                     <th className="py-2.5 px-3">Tote #</th>
@@ -319,20 +319,20 @@ export const OrderPickingTab: React.FC<OrderPickingTabProps> = ({
                     <th className="py-2.5 px-3">Bagging Instruction</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-800/60 font-sans">
+                <tbody className="divide-y divide-slate-200 font-sans">
                   {cartTotes.flatMap(tote =>
                     tote.items.map((item) => (
-                      <tr key={`${tote.tote_id}-${item.id}`} className="hover:bg-slate-800/40">
+                      <tr key={`${tote.tote_id}-${item.id}`} className="hover:bg-slate-100/40">
                         <td className="py-2.5 px-3 text-center">
-                          <input type="checkbox" className="rounded bg-slate-800 border-slate-700 text-sky-600 focus:ring-0 cursor-pointer" />
+                          <input type="checkbox" className="rounded bg-slate-100 border-slate-300 text-sky-600 focus:ring-0 cursor-pointer" />
                         </td>
-                        <td className="py-2.5 px-3 font-mono font-bold text-sky-400">
+                        <td className="py-2.5 px-3 font-mono font-bold text-zamiigo-teal">
                           {tote.tote_code}
                           {tote.is_oversized_split && (
-                            <span className="ml-1 text-[9px] text-amber-400">P{tote.split_part_index}</span>
+                            <span className="ml-1 text-[9px] text-amber-600">P{tote.split_part_index}</span>
                           )}
                         </td>
-                        <td className="py-2.5 px-3 font-mono text-slate-200">
+                        <td className="py-2.5 px-3 font-mono text-slate-800">
                           HH #{item.household_id}
                         </td>
                         <td className="py-2.5 px-3 font-medium text-slate-100">
@@ -341,7 +341,7 @@ export const OrderPickingTab: React.FC<OrderPickingTabProps> = ({
                         <td className="py-2.5 px-3 font-mono text-slate-400">
                           {item.product_id}
                         </td>
-                        <td className="py-2.5 px-3 font-mono text-slate-300">
+                        <td className="py-2.5 px-3 font-mono text-slate-700">
                           {item.weight_lb} lb
                         </td>
                         <td className="py-2.5 px-3 font-mono text-slate-400">

@@ -4,28 +4,29 @@
 
 @layer base {
   :root {
-    color-scheme: dark;
+    color-scheme: light;
   }
 
   body {
-    @apply bg-slate-950 text-slate-100 antialiased font-sans;
+    background-color: #F7F9FA; /* zamiigo.ice.canvas */
+    @apply text-slate-900 antialiased font-sans selection:bg-zamiigo-amber/30;
   }
 }
 
 /* Custom scrollbar for data tables and tote lists */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 8px;
+  height: 8px;
 }
 ::-webkit-scrollbar-track {
-  background: #090d16;
+  background: theme('colors.zamiigo.ice.canvas');
 }
 ::-webkit-scrollbar-thumb {
-  background: #1e293b;
-  border-radius: 3px;
+  background: theme('colors.slate.300');
+  border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #334155;
+  background: theme('colors.slate.400');
 }
 
 /* Print Styles for Pick Lists and Flight Manifests */

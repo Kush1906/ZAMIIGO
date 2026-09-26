@@ -81,17 +81,17 @@ export const App: React.FC = () => {
 
   if (loading || !planState) {
     return (
-      <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center space-y-4">
-        <Loader2 className="h-10 w-10 text-sky-500 animate-spin" />
-        <div className="text-slate-400 font-mono text-sm">
-          Loading Zamiigo Cargo Logistics Engine...
+      <div className="min-h-screen bg-zamiigo-ice-canvas flex flex-col items-center justify-center space-y-6">
+        <Loader2 className="h-10 w-10 text-zamiigo-teal animate-spin" />
+        <div className="text-slate-500 font-sans font-medium text-sm tracking-widest uppercase">
+          Loading Zamiigo Cargo Engine...
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col selection:bg-sky-500/30">
+    <div className="min-h-screen bg-zamiigo-ice-canvas text-slate-900 flex flex-col selection:bg-zamiigo-amber/30">
       
       {/* Persistent Navigation Header */}
       <Header
@@ -105,7 +105,7 @@ export const App: React.FC = () => {
       />
 
       {/* Main Content Area */}
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {activeTab === 'entry' && (
           <OrderEntryTab state={planState} onUpdateStatus={handleUpdateOrderStatus} />
         )}
@@ -145,10 +145,10 @@ export const App: React.FC = () => {
       />
 
       {/* Footer */}
-      <footer className="border-t border-slate-900 bg-slate-950 py-4 text-center text-xs text-slate-500 no-print">
+      <footer className="border-t border-slate-200 bg-white py-6 text-center text-xs text-slate-500 no-print mt-auto shadow-sm">
         <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
-          <span>Wilderness North & Zamiigo Northern Community Logistics Engine</span>
-          <span className="font-mono text-[11px] text-slate-600">
+          <span className="font-medium text-slate-700">Wilderness North & Zamiigo Northern Community Logistics Engine</span>
+          <span className="font-mono text-[11px] text-slate-400">
             Route: Nakina (CYQN) ➔ Webequie (CYWP) | Cessna 208 Caravan
           </span>
         </div>

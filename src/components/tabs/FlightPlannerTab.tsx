@@ -44,12 +44,12 @@ export const FlightPlannerTab: React.FC<FlightPlannerTabProps> = ({ state }) => 
     <div className="space-y-6">
 
       {/* Top Banner & Multi-Flight Selector */}
-      <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-sm">
+      <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
           <div>
             <div className="flex items-center space-x-2">
-              <h2 className="text-xl font-bold text-white tracking-tight">Cessna 208 Caravan Flight Load Planner</h2>
-              <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-950 text-emerald-400 border border-emerald-800">
+              <h2 className="text-xl font-bold text-slate-900 tracking-tight">Cessna 208 Caravan Flight Load Planner</h2>
+              <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-600 border border-emerald-200">
                 CYQN ➔ CYWP
               </span>
             </div>
@@ -62,14 +62,14 @@ export const FlightPlannerTab: React.FC<FlightPlannerTabProps> = ({ state }) => 
             <button
               onClick={handleGenerateBrief}
               disabled={isGeneratingAi}
-              className="flex items-center space-x-2 px-3.5 py-2 rounded-xl bg-gradient-to-r from-sky-600 to-indigo-600 hover:from-sky-500 hover:to-indigo-500 text-white text-xs font-semibold shadow-sm transition disabled:opacity-50"
+              className="flex items-center space-x-2 px-3.5 py-2 rounded-xl bg-gradient-to-r from-sky-600 to-indigo-600 hover:from-sky-500 hover:to-indigo-500 text-slate-900 text-xs font-semibold shadow-sm transition disabled:opacity-50"
             >
               <Sparkles className="h-4 w-4" />
               <span>{isGeneratingAi ? 'Synthesizing with Gemini...' : 'AI Dispatch Brief'}</span>
             </button>
             <button
               onClick={handlePrintManifest}
-              className="flex items-center space-x-2 px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-semibold transition"
+              className="flex items-center space-x-2 px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-300 text-xs font-semibold transition"
             >
               <Printer className="h-4 w-4" />
               <span>Print Flight Manifest</span>
@@ -85,25 +85,25 @@ export const FlightPlannerTab: React.FC<FlightPlannerTabProps> = ({ state }) => 
               onClick={() => { setSelectedDepId(dep.departure_id); setAiBrief(null); }}
               className={`p-3 rounded-xl border text-left min-w-[210px] transition-all ${
                 selectedDep.departure_id === dep.departure_id
-                  ? 'border-sky-500 bg-sky-950/40 ring-1 ring-sky-500'
-                  : 'border-slate-800 bg-slate-950 hover:border-slate-700'
+                  ? 'border-zamiigo-teal bg-zamiigo-ice/40 ring-1 ring-zamiigo-teal'
+                  : 'border-slate-200 bg-slate-50 hover:border-slate-300'
               }`}
             >
               <div className="flex items-center justify-between text-xs">
-                <span className="font-bold text-white font-mono">{dep.departure_id}</span>
+                <span className="font-bold text-slate-900 font-mono">{dep.departure_id}</span>
                 <span className="text-slate-400 font-mono">{dep.departure_date}</span>
               </div>
-              <div className="mt-1 text-xs text-slate-300">
+              <div className="mt-1 text-xs text-slate-700">
                 {dep.total_totes_count} / {dep.available_totes} totes | {dep.total_weight_lb} lb
               </div>
               <div className="mt-1 flex items-center justify-between text-[10px]">
                 <span className={`font-semibold ${
-                  dep.binding_constraint === 'NONE' ? 'text-slate-500' : 'text-amber-400'
+                  dep.binding_constraint === 'NONE' ? 'text-slate-400' : 'text-amber-600'
                 }`}>
                   Binding: {dep.binding_constraint}
                 </span>
                 {dep.rolled_over_order_ids.length > 0 && (
-                  <span className="text-amber-400 font-medium">
+                  <span className="text-amber-600 font-medium">
                     {dep.rolled_over_order_ids.length} Rolled Over
                   </span>
                 )}
@@ -116,64 +116,64 @@ export const FlightPlannerTab: React.FC<FlightPlannerTabProps> = ({ state }) => 
       {/* Flight Capacity KPIs & Binding Constraint Analysis */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         {/* Payload KPI */}
-        <div className="bg-slate-900 border border-slate-800 rounded-2xl p-4">
+        <div className="bg-white border border-slate-200 rounded-2xl p-4">
           <div className="flex items-center justify-between">
             <span className="text-xs text-slate-400">Aircraft Payload</span>
-            <Scale className="h-4 w-4 text-sky-400" />
+            <Scale className="h-4 w-4 text-zamiigo-teal" />
           </div>
           <div className="mt-2 flex items-baseline justify-between font-mono">
-            <span className="text-2xl font-bold text-white">{selectedDep.total_weight_lb}</span>
+            <span className="text-2xl font-bold text-slate-900">{selectedDep.total_weight_lb}</span>
             <span className="text-xs text-slate-400">/ {selectedDep.available_payload_lb} lb</span>
           </div>
-          <div className="w-full bg-slate-950 rounded-full h-2 mt-2 overflow-hidden border border-slate-800">
+          <div className="w-full bg-slate-50 rounded-full h-2 mt-2 overflow-hidden border border-slate-200">
             <div
               className={`h-full rounded-full ${
-                selectedDep.payload_utilization_pct > 95 ? 'bg-amber-500' : 'bg-sky-500'
+                selectedDep.payload_utilization_pct > 95 ? 'bg-amber-500' : 'bg-zamiigo-teal'
               }`}
               style={{ width: `${Math.min(100, selectedDep.payload_utilization_pct)}%` }}
             />
           </div>
           <div className="mt-2 text-[11px] text-slate-400 flex items-center justify-between font-mono">
             <span>Utilization: <strong>{selectedDep.payload_utilization_pct}%</strong></span>
-            <span>Margin: <strong className="text-emerald-400">{remainingPayloadLb} lb</strong></span>
+            <span>Margin: <strong className="text-emerald-600">{remainingPayloadLb} lb</strong></span>
           </div>
         </div>
 
         {/* Tote Slots KPI */}
-        <div className="bg-slate-900 border border-slate-800 rounded-2xl p-4">
+        <div className="bg-white border border-slate-200 rounded-2xl p-4">
           <div className="flex items-center justify-between">
             <span className="text-xs text-slate-400">Tote Slots</span>
             <Box className="h-4 w-4 text-purple-400" />
           </div>
           <div className="mt-2 flex items-baseline justify-between font-mono">
-            <span className="text-2xl font-bold text-white">{selectedDep.total_totes_count}</span>
+            <span className="text-2xl font-bold text-slate-900">{selectedDep.total_totes_count}</span>
             <span className="text-xs text-slate-400">/ {selectedDep.available_totes} slots</span>
           </div>
-          <div className="w-full bg-slate-950 rounded-full h-2 mt-2 overflow-hidden border border-slate-800">
+          <div className="w-full bg-slate-50 rounded-full h-2 mt-2 overflow-hidden border border-slate-200">
             <div
               className={`h-full rounded-full ${
-                selectedDep.tote_utilization_pct >= 100 ? 'bg-purple-500' : 'bg-sky-500'
+                selectedDep.tote_utilization_pct >= 100 ? 'bg-purple-500' : 'bg-zamiigo-teal'
               }`}
               style={{ width: `${Math.min(100, selectedDep.tote_utilization_pct)}%` }}
             />
           </div>
           <div className="mt-2 text-[11px] text-slate-400 flex items-center justify-between font-mono">
             <span>Utilization: <strong>{selectedDep.tote_utilization_pct}%</strong></span>
-            <span>Slots Left: <strong className="text-emerald-400">{remainingToteSlots}</strong></span>
+            <span>Slots Left: <strong className="text-emerald-600">{remainingToteSlots}</strong></span>
           </div>
         </div>
 
         {/* Cargo Volume KPI */}
-        <div className="bg-slate-900 border border-slate-800 rounded-2xl p-4">
+        <div className="bg-white border border-slate-200 rounded-2xl p-4">
           <div className="flex items-center justify-between">
             <span className="text-xs text-slate-400">Cargo Space</span>
             <Plane className="h-4 w-4 text-cyan-400" />
           </div>
           <div className="mt-2 flex items-baseline justify-between font-mono">
-            <span className="text-2xl font-bold text-white">{selectedDep.total_volume_cuft}</span>
+            <span className="text-2xl font-bold text-slate-900">{selectedDep.total_volume_cuft}</span>
             <span className="text-xs text-slate-400">/ {selectedDep.available_volume_cuft} cu ft</span>
           </div>
-          <div className="w-full bg-slate-950 rounded-full h-2 mt-2 overflow-hidden border border-slate-800">
+          <div className="w-full bg-slate-50 rounded-full h-2 mt-2 overflow-hidden border border-slate-200">
             <div
               className="h-full rounded-full bg-cyan-500"
               style={{ width: `${Math.min(100, selectedDep.volume_utilization_pct)}%` }}
@@ -181,16 +181,16 @@ export const FlightPlannerTab: React.FC<FlightPlannerTabProps> = ({ state }) => 
           </div>
           <div className="mt-2 text-[11px] text-slate-400 flex items-center justify-between font-mono">
             <span>Space Used: <strong>{selectedDep.volume_utilization_pct}%</strong></span>
-            <span>Space Left: <strong className="text-emerald-400">{remainingVolumeCuFt} cu ft</strong></span>
+            <span>Space Left: <strong className="text-emerald-600">{remainingVolumeCuFt} cu ft</strong></span>
           </div>
         </div>
 
         {/* Binding Constraint Card */}
-        <div className="bg-slate-900 border border-slate-800 rounded-2xl p-4 flex flex-col justify-between">
+        <div className="bg-white border border-slate-200 rounded-2xl p-4 flex flex-col justify-between">
           <div>
             <span className="text-xs text-slate-400">Active Binding Constraint</span>
-            <div className="mt-2 font-mono font-extrabold text-lg text-amber-400 flex items-center space-x-2">
-              <AlertTriangle className="h-5 w-5 text-amber-400 shrink-0" />
+            <div className="mt-2 font-mono font-extrabold text-lg text-amber-600 flex items-center space-x-2">
+              <AlertTriangle className="h-5 w-5 text-amber-600 shrink-0" />
               <span>{selectedDep.binding_constraint}</span>
             </div>
             <p className="text-[11px] text-slate-400 mt-1">
@@ -200,7 +200,7 @@ export const FlightPlannerTab: React.FC<FlightPlannerTabProps> = ({ state }) => 
               {selectedDep.binding_constraint === 'NONE' && 'All available orders fit within structural and volumetric limits.'}
             </p>
           </div>
-          <div className="mt-2 pt-2 border-t border-slate-800 text-[10px] text-slate-500 font-mono">
+          <div className="mt-2 pt-2 border-t border-slate-200 text-[10px] text-slate-400 font-mono">
             Avg Tote Weight: {selectedDep.total_totes_count > 0 ? (selectedDep.total_weight_lb / selectedDep.total_totes_count).toFixed(1) : 0} lb
           </div>
         </div>
@@ -208,43 +208,43 @@ export const FlightPlannerTab: React.FC<FlightPlannerTabProps> = ({ state }) => 
 
       {/* AI Dispatch Briefing Output Box (if generated) */}
       {aiBrief && (
-        <div className="bg-slate-900/90 border border-sky-800/80 rounded-2xl p-5 shadow-lg relative">
-          <div className="flex items-center justify-between border-b border-slate-800 pb-3 mb-3">
+        <div className="bg-white/90 border border-zamiigo-teal/20/80 rounded-2xl p-5 shadow-lg relative">
+          <div className="flex items-center justify-between border-b border-slate-200 pb-3 mb-3">
             <div className="flex items-center space-x-2">
-              <Sparkles className="h-4 w-4 text-sky-400" />
-              <h3 className="font-bold text-white text-sm">
+              <Sparkles className="h-4 w-4 text-zamiigo-teal" />
+              <h3 className="font-bold text-slate-900 text-sm">
                 AI Dispatcher & Operational Briefing ({selectedDep.departure_id})
               </h3>
               <span className={`text-[10px] px-2 py-0.5 rounded-full font-mono border ${
                 aiBrief.source === 'gemini'
-                  ? 'bg-sky-950 text-sky-300 border-sky-800'
-                  : 'bg-slate-800 text-slate-300 border-slate-700'
+                  ? 'bg-zamiigo-ice text-sky-300 border-zamiigo-teal/20'
+                  : 'bg-slate-100 text-slate-700 border-slate-300'
               }`}>
                 {aiBrief.source === 'gemini' ? `Google Gemini (${aiBrief.requestsRemaining ?? '?'} quota left)` : 'Deterministic Operations Engine'}
               </span>
             </div>
             <button
               onClick={() => setAiBrief(null)}
-              className="text-xs text-slate-400 hover:text-white"
+              className="text-xs text-slate-400 hover:text-slate-900"
             >
               Dismiss
             </button>
           </div>
-          <div className="text-xs text-slate-300 whitespace-pre-line leading-relaxed font-sans">
+          <div className="text-xs text-slate-700 whitespace-pre-line leading-relaxed font-sans">
             {aiBrief.briefMarkdown}
           </div>
         </div>
       )}
 
       {/* Schematic Cabin Grid & Tote Load Visualization */}
-      <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-sm">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800 pb-3">
+      <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-200 pb-3">
           <div>
             <div className="flex items-center space-x-2">
-              <h3 className="font-bold text-white text-sm font-mono">
+              <h3 className="font-bold text-slate-900 text-sm font-mono">
                 Cessna 208 Caravan Cabin Cargo Layout (Schematic)
               </h3>
-              <span className="text-[10px] px-2 py-0.5 rounded bg-slate-800 text-slate-400 font-mono">
+              <span className="text-[10px] px-2 py-0.5 rounded bg-slate-100 text-slate-400 font-mono">
                 Estimate
               </span>
             </div>
@@ -252,13 +252,13 @@ export const FlightPlannerTab: React.FC<FlightPlannerTabProps> = ({ state }) => 
               Cabin dimensions: 64" W × 54" H × 12.5' L. Modeled as empty freighter with 90-tote stacked ceiling.
             </p>
           </div>
-          <div className="text-[11px] text-amber-400/90 font-mono">
+          <div className="text-[11px] text-amber-600/90 font-mono">
             * Schematic Layout Estimate (Non-certified loading configuration)
           </div>
         </div>
 
         {/* Visual 90-Slot Cargo Hold Representation */}
-        <div className="mt-4 p-4 rounded-xl bg-slate-950 border border-slate-800">
+        <div className="mt-4 p-4 rounded-xl bg-slate-50 border border-slate-200">
           <div className="flex items-center justify-between text-xs text-slate-400 mb-2 font-mono">
             <span>FORWARD (Cockpit Bulkhead)</span>
             <span>AFT (Cargo Door 50"×49")</span>
@@ -276,9 +276,9 @@ export const FlightPlannerTab: React.FC<FlightPlannerTabProps> = ({ state }) => 
                   className={`h-12 rounded-lg border flex flex-col items-center justify-center transition-all ${
                     isFilled
                       ? tote.volume_fill_pct > 90
-                        ? 'bg-amber-950/80 border-amber-700 text-amber-200'
-                        : 'bg-sky-950/80 border-sky-700 text-sky-200'
-                      : 'bg-slate-900/40 border-slate-800/80 text-slate-600'
+                        ? 'bg-amber-50/80 border-amber-700 text-amber-200'
+                        : 'bg-zamiigo-ice/80 border-sky-700 text-sky-200'
+                      : 'bg-white/40 border-slate-200/80 text-slate-600'
                   }`}
                   title={isFilled ? `${tote.tote_code}: ${tote.total_weight_lb} lb (${tote.volume_fill_pct}% vol)` : `Empty Slot #${idx + 1}`}
                 >
@@ -295,18 +295,18 @@ export const FlightPlannerTab: React.FC<FlightPlannerTabProps> = ({ state }) => 
             })}
           </div>
 
-          <div className="mt-3 flex items-center justify-between text-[11px] text-slate-400 font-mono pt-2 border-t border-slate-800/60">
+          <div className="mt-3 flex items-center justify-between text-[11px] text-slate-400 font-mono pt-2 border-t border-slate-200/60">
             <div className="flex items-center space-x-3">
               <div className="flex items-center space-x-1.5">
-                <div className="w-3 h-3 rounded bg-sky-950 border border-sky-700" />
+                <div className="w-3 h-3 rounded bg-zamiigo-ice border border-sky-700" />
                 <span>Standard Tote</span>
               </div>
               <div className="flex items-center space-x-1.5">
-                <div className="w-3 h-3 rounded bg-amber-950 border border-amber-700" />
+                <div className="w-3 h-3 rounded bg-amber-50 border border-amber-700" />
                 <span>Heavy/High-Fill Tote</span>
               </div>
               <div className="flex items-center space-x-1.5">
-                <div className="w-3 h-3 rounded bg-slate-900/40 border border-slate-800" />
+                <div className="w-3 h-3 rounded bg-white/40 border border-slate-200" />
                 <span>Unused Slot</span>
               </div>
             </div>
@@ -317,22 +317,22 @@ export const FlightPlannerTab: React.FC<FlightPlannerTabProps> = ({ state }) => 
 
       {/* Stage 2 Rollover Management Table */}
       {selectedDep.rolled_over_order_ids.length > 0 && (
-        <div className="bg-slate-900 border border-amber-800/60 rounded-2xl overflow-hidden shadow-sm">
-          <div className="p-4 bg-amber-950/30 border-b border-amber-800/60 flex items-center justify-between">
+        <div className="bg-white border border-amber-200/60 rounded-2xl overflow-hidden shadow-sm">
+          <div className="p-4 bg-amber-50/30 border-b border-amber-200/60 flex items-center justify-between">
             <div className="flex items-center space-x-2">
-              <AlertTriangle className="h-4 w-4 text-amber-400" />
+              <AlertTriangle className="h-4 w-4 text-amber-600" />
               <h3 className="font-bold text-amber-200 text-sm font-mono">
                 Stage 2 Rollover Ledger ({selectedDep.rolled_over_order_ids.length} Orders Deferred)
               </h3>
             </div>
-            <span className="text-xs text-amber-300 font-mono">
+            <span className="text-xs text-amber-700 font-mono">
               Binding Constraint: {selectedDep.binding_constraint}
             </span>
           </div>
 
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
-              <thead className="bg-slate-950 text-slate-400 font-mono uppercase tracking-wider border-b border-slate-800">
+              <thead className="bg-slate-50 text-slate-400 font-mono uppercase tracking-wider border-b border-slate-200">
                 <tr>
                   <th className="py-2.5 px-4">Household & Order ID</th>
                   <th className="py-2.5 px-4">Order Date</th>
@@ -342,21 +342,21 @@ export const FlightPlannerTab: React.FC<FlightPlannerTabProps> = ({ state }) => 
                   <th className="py-2.5 px-4">Next Flight Action</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-800/60 font-sans">
+              <tbody className="divide-y divide-slate-200 font-sans">
                 {rolledOverOrders.map(order => (
-                  <tr key={order.order_id} className="hover:bg-slate-800/40">
-                    <td className="py-3 px-4 font-mono font-bold text-sky-400">
-                      HH #{order.household_id} <span className="text-xs font-normal text-slate-500">(Order #{order.order_id})</span>
+                  <tr key={order.order_id} className="hover:bg-slate-100/40">
+                    <td className="py-3 px-4 font-mono font-bold text-zamiigo-teal">
+                      HH #{order.household_id} <span className="text-xs font-normal text-slate-400">(Order #{order.order_id})</span>
                     </td>
-                    <td className="py-3 px-4 font-mono text-slate-300">{order.order_date}</td>
-                    <td className="py-3 px-4 font-mono text-slate-300">
+                    <td className="py-3 px-4 font-mono text-slate-700">{order.order_date}</td>
+                    <td className="py-3 px-4 font-mono text-slate-700">
                       {order.total_weight_lb} lb | {order.total_volume_cuin} cu in
                     </td>
-                    <td className="py-3 px-4 text-slate-300">{order.item_count} items</td>
-                    <td className="py-3 px-4 text-amber-300">
+                    <td className="py-3 px-4 text-slate-700">{order.item_count} items</td>
+                    <td className="py-3 px-4 text-amber-700">
                       {order.rollover_reason || 'Exceeded flight capacity limit'}
                     </td>
-                    <td className="py-3 px-4 font-mono text-xs text-emerald-400 flex items-center space-x-1">
+                    <td className="py-3 px-4 font-mono text-xs text-emerald-600 flex items-center space-x-1">
                       <span>Rolls to Next Departure</span>
                       <ArrowRight className="h-3 w-3" />
                     </td>
@@ -369,10 +369,10 @@ export const FlightPlannerTab: React.FC<FlightPlannerTabProps> = ({ state }) => 
       )}
 
       {/* Official Flight Manifest (Print Ready) */}
-      <div className="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-sm">
-        <div className="p-4 border-b border-slate-800 flex items-center justify-between">
+      <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
+        <div className="p-4 border-b border-slate-200 flex items-center justify-between">
           <div>
-            <h3 className="font-bold text-white text-sm font-mono">
+            <h3 className="font-bold text-slate-900 text-sm font-mono">
               Official Cargo Flight Manifest: {selectedDep.departure_id}
             </h3>
             <p className="text-xs text-slate-400 mt-0.5">
@@ -381,7 +381,7 @@ export const FlightPlannerTab: React.FC<FlightPlannerTabProps> = ({ state }) => 
           </div>
           <button
             onClick={handlePrintManifest}
-            className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold flex items-center space-x-1.5 transition"
+            className="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold flex items-center space-x-1.5 transition"
           >
             <Printer className="h-3.5 w-3.5" />
             <span>Print Manifest</span>
@@ -390,7 +390,7 @@ export const FlightPlannerTab: React.FC<FlightPlannerTabProps> = ({ state }) => 
 
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
-            <thead className="bg-slate-950 text-slate-400 font-mono uppercase tracking-wider border-b border-slate-800">
+            <thead className="bg-slate-50 text-slate-400 font-mono uppercase tracking-wider border-b border-slate-200">
               <tr>
                 <th className="py-3 px-4">Tote Code</th>
                 <th className="py-3 px-4">Contained Household Orders</th>
@@ -401,46 +401,46 @@ export const FlightPlannerTab: React.FC<FlightPlannerTabProps> = ({ state }) => 
                 <th className="py-3 px-4">Destination</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-800/60 font-sans">
+            <tbody className="divide-y divide-slate-200 font-sans">
               {flightTotes.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="py-8 text-center text-slate-500">
+                  <td colSpan={7} className="py-8 text-center text-slate-400">
                     No totes assigned to this flight departure.
                   </td>
                 </tr>
               ) : (
                 flightTotes.map(tote => (
-                  <tr key={tote.tote_id} className="hover:bg-slate-800/40">
-                    <td className="py-3 px-4 font-mono font-bold text-sky-400">
+                  <tr key={tote.tote_id} className="hover:bg-slate-100/40">
+                    <td className="py-3 px-4 font-mono font-bold text-zamiigo-teal">
                       {tote.tote_code}
                       {tote.is_oversized_split && (
-                        <span className="ml-1.5 text-[10px] px-1.5 py-0.5 rounded bg-amber-950 text-amber-300 border border-amber-800 font-sans">
+                        <span className="ml-1.5 text-[10px] px-1.5 py-0.5 rounded bg-amber-50 text-amber-700 border border-amber-200 font-sans">
                           Part {tote.split_part_index}/{tote.split_total_parts}
                         </span>
                       )}
                     </td>
-                    <td className="py-3 px-4 font-mono text-slate-200">
+                    <td className="py-3 px-4 font-mono text-slate-800">
                       {tote.assigned_household_ids.map(h => `Household #${h}`).join(', ')}
                     </td>
-                    <td className="py-3 px-4 text-slate-300">{tote.items.length} items</td>
+                    <td className="py-3 px-4 text-slate-700">{tote.items.length} items</td>
                     <td className="py-3 px-4 font-mono font-bold text-slate-100">{tote.total_weight_lb} lb</td>
                     <td className="py-3 px-4 font-mono text-slate-400">
                       {tote.volume_fill_pct}% ({tote.total_volume_cuin} cu in)
                     </td>
-                    <td className="py-3 px-4 font-mono text-slate-300">{tote.assigned_cart_id || 'Pending Cart'}</td>
-                    <td className="py-3 px-4 text-emerald-400 font-semibold">Webequie (CYWP)</td>
+                    <td className="py-3 px-4 font-mono text-slate-700">{tote.assigned_cart_id || 'Pending Cart'}</td>
+                    <td className="py-3 px-4 text-emerald-600 font-semibold">Webequie (CYWP)</td>
                   </tr>
                 ))
               )}
             </tbody>
-            <tfoot className="bg-slate-950/80 font-mono font-bold text-xs border-t border-slate-800 text-slate-200">
+            <tfoot className="bg-slate-50 font-mono font-bold text-xs border-t border-slate-200 text-slate-800">
               <tr>
                 <td className="py-3 px-4">TOTALS:</td>
                 <td className="py-3 px-4">{selectedDep.assigned_order_ids.length} Orders</td>
                 <td className="py-3 px-4">{flightTotes.reduce((sum, t) => sum + t.items.length, 0)} Items</td>
-                <td className="py-3 px-4 text-sky-400">{selectedDep.total_weight_lb} lb</td>
+                <td className="py-3 px-4 text-zamiigo-teal">{selectedDep.total_weight_lb} lb</td>
                 <td className="py-3 px-4 text-cyan-400">{selectedDep.total_volume_cuft} cu ft</td>
-                <td colSpan={2} className="py-3 px-4 text-right text-emerald-400">
+                <td colSpan={2} className="py-3 px-4 text-right text-emerald-600">
                   {flightTotes.length} Totes Dispatched
                 </td>
               </tr>
