@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Fira+Code:wght@400;500;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -8,43 +10,60 @@
   }
 
   body {
-    background-color: #F7F9FA; /* zamiigo.ice.canvas */
-    @apply text-slate-900 antialiased font-sans selection:bg-zamiigo-amber/30;
+    background-color: #F0F4F8; /* zamiigo.ice.canvas */
+    background-image: 
+      radial-gradient(at 0% 0%, rgba(7, 59, 76, 0.05) 0px, transparent 50%),
+      radial-gradient(at 100% 0%, rgba(255, 182, 0, 0.05) 0px, transparent 50%);
+    background-attachment: fixed;
+    @apply text-slate-900 antialiased font-sans selection:bg-zamiigo-amber/30 selection:text-slate-900;
   }
 }
 
-/* Custom scrollbar for data tables and tote lists */
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
-::-webkit-scrollbar-track {
-  background: theme('colors.zamiigo.ice.canvas');
-}
-::-webkit-scrollbar-thumb {
-  background: theme('colors.slate.300');
-  border-radius: 4px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: theme('colors.slate.400');
+/* Glassmorphism utilities */
+.glass-panel {
+  @apply bg-white/70 backdrop-blur-md border border-white/60 shadow-[0_8px_30px_rgb(0,0,0,0.04)] transition-all duration-300;
 }
 
-/* Print Styles for Pick Lists and Flight Manifests */
+.glass-header {
+  @apply bg-zamiigo-teal-dark/95 backdrop-blur-xl border-b border-white/10 shadow-xl;
+}
+
+.hover-lift {
+  @apply transition-transform duration-300 ease-out hover:-translate-y-1 hover:shadow-lg;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  @apply bg-zamiigo-teal-dark/20 rounded-full;
+}
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-zamiigo-teal-dark/40;
+}
+
+/* Micro-animations */
+.animate-fade-in {
+  animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(15px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Print Styles */
 @media print {
   body {
     background: white !important;
     color: black !important;
   }
-
-  .no-print {
-    display: none !important;
-  }
-
-  .print-only {
-    display: block !important;
-  }
-
-  .print-page-break {
-    page-break-after: always;
-  }
+  .no-print { display: none !important; }
+  .print-only { display: block !important; }
+  .print-page-break { page-break-after: always; }
 }

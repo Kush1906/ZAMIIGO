@@ -22,8 +22,8 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
   const warnings = issues.filter(i => i.type === 'WARNING');
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-50 backdrop-blur-sm no-print">
-      <div className="bg-white border border-slate-200 rounded-3xl w-full max-w-xl overflow-hidden shadow-2xl animate-in fade-in zoom-in-95 duration-150">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-md no-print">
+      <div className="glass-panel rounded-3xl w-full max-w-xl overflow-hidden shadow-2xl animate-fade-in">
         
         {/* Header */}
         <div className="p-5 border-b border-slate-200 flex items-center justify-between">

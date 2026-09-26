@@ -91,10 +91,10 @@ export const App: React.FC = () => {
 
   if (loading || !planState) {
     return (
-      <div className="min-h-screen bg-zamiigo-ice-canvas flex flex-col items-center justify-center space-y-6">
-        <Loader2 className="h-10 w-10 text-zamiigo-teal animate-spin" />
-        <div className="text-slate-500 font-sans font-medium text-sm tracking-widest uppercase">
-          Loading Zamiigo Cargo Engine...
+      <div className="min-h-screen flex flex-col items-center justify-center space-y-6">
+        <Loader2 className="h-12 w-12 text-zamiigo-amber animate-spin" />
+        <div className="text-slate-600 font-sans font-bold text-sm tracking-widest uppercase">
+          Initializing Logistics Engine...
         </div>
       </div>
     );
@@ -155,10 +155,12 @@ export const App: React.FC = () => {
       />
 
       {/* Footer */}
-      <footer className="border-t border-slate-200 bg-white py-6 text-center text-xs text-slate-500 no-print mt-auto shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
-          <span className="font-medium text-slate-700">Wilderness North & Zamiigo Northern Community Logistics Engine</span>
-          <span className="font-mono text-[11px] text-slate-400">
+      <footer className="border-t border-white/10 bg-zamiigo-teal-dark py-6 text-center text-xs text-zamiigo-ice/60 no-print mt-auto shadow-inner relative z-10">
+        <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-3">
+          <div className="flex items-center space-x-2">
+            <span className="font-semibold text-white/80 tracking-wide">Wilderness North & Zamiigo Northern Community Logistics</span>
+          </div>
+          <span className="font-mono text-[11px] px-3 py-1 bg-black/20 rounded-full border border-white/5 text-zamiigo-ice/80">
             Route: Nakina (CYQN) ➔ Webequie (CYWP) | Cessna 208 Caravan
           </span>
         </div>

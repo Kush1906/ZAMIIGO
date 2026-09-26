@@ -44,7 +44,7 @@ export const FlightPlannerTab: React.FC<FlightPlannerTabProps> = ({ state }) => 
     <div className="space-y-6">
 
       {/* Top Banner & Multi-Flight Selector */}
-      <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
+      <div className="glass-panel rounded-3xl p-6">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
           <div>
             <div className="flex items-center space-x-2">
@@ -146,7 +146,7 @@ export const FlightPlannerTab: React.FC<FlightPlannerTabProps> = ({ state }) => 
       {/* Flight Capacity KPIs & Binding Constraint Analysis */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         {/* Payload KPI */}
-        <div className="bg-white border border-slate-200 rounded-2xl p-4">
+        <div className="glass-panel hover-lift rounded-2xl p-5">
           <div className="flex items-center justify-between">
             <span className="text-xs text-slate-400">Aircraft Payload</span>
             <Scale className="h-4 w-4 text-zamiigo-teal" />
@@ -170,7 +170,7 @@ export const FlightPlannerTab: React.FC<FlightPlannerTabProps> = ({ state }) => 
         </div>
 
         {/* Tote Slots KPI */}
-        <div className="bg-white border border-slate-200 rounded-2xl p-4">
+        <div className="glass-panel hover-lift rounded-2xl p-5">
           <div className="flex items-center justify-between">
             <span className="text-xs text-slate-400">Tote Slots</span>
             <Box className="h-4 w-4 text-purple-400" />
@@ -194,7 +194,7 @@ export const FlightPlannerTab: React.FC<FlightPlannerTabProps> = ({ state }) => 
         </div>
 
         {/* Cargo Volume KPI */}
-        <div className="bg-white border border-slate-200 rounded-2xl p-4">
+        <div className="glass-panel hover-lift rounded-2xl p-5">
           <div className="flex items-center justify-between">
             <span className="text-xs text-slate-400">Cargo Space</span>
             <Plane className="h-4 w-4 text-cyan-400" />
@@ -216,7 +216,7 @@ export const FlightPlannerTab: React.FC<FlightPlannerTabProps> = ({ state }) => 
         </div>
 
         {/* Binding Constraint Card */}
-        <div className="bg-white border border-slate-200 rounded-2xl p-4 flex flex-col justify-between">
+        <div className="glass-panel hover-lift rounded-2xl p-5 flex flex-col justify-between">
           <div>
             <span className="text-xs text-slate-400">Active Binding Constraint</span>
             <div className="mt-2 font-mono font-extrabold text-lg text-amber-600 flex items-center space-x-2">
@@ -238,7 +238,7 @@ export const FlightPlannerTab: React.FC<FlightPlannerTabProps> = ({ state }) => 
 
       {/* AI Dispatch Briefing Output Box (if generated) */}
       {aiBrief && (
-        <div className="bg-white/90 border border-zamiigo-teal/20/80 rounded-2xl p-5 shadow-lg relative">
+        <div className="glass-panel border-zamiigo-amber/50 rounded-3xl p-6 relative animate-fade-in">
           <div className="flex items-center justify-between border-b border-slate-200 pb-3 mb-3">
             <div className="flex items-center space-x-2">
               <Sparkles className="h-4 w-4 text-zamiigo-teal" />
@@ -267,7 +267,7 @@ export const FlightPlannerTab: React.FC<FlightPlannerTabProps> = ({ state }) => 
       )}
 
       {/* Schematic Cabin Grid & Tote Load Visualization */}
-      <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
+      <div className="glass-panel rounded-3xl p-6">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-200 pb-3">
           <div>
             <div className="flex items-center space-x-2">
@@ -347,7 +347,7 @@ export const FlightPlannerTab: React.FC<FlightPlannerTabProps> = ({ state }) => 
 
       {/* Stage 2 Rollover Management Table */}
       {selectedDep.rolled_over_order_ids.length > 0 && (
-        <div className="bg-white border border-amber-200/60 rounded-2xl overflow-hidden shadow-sm">
+        <div className="glass-panel border-amber-200/60 rounded-3xl overflow-hidden">
           <div className="p-4 bg-amber-50/30 border-b border-amber-200/60 flex items-center justify-between">
             <div className="flex items-center space-x-2">
               <AlertTriangle className="h-4 w-4 text-amber-600" />
@@ -399,7 +399,7 @@ export const FlightPlannerTab: React.FC<FlightPlannerTabProps> = ({ state }) => 
       )}
 
       {/* Proposed Flight Manifest (Print Ready) */}
-      <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
+      <div className="glass-panel rounded-3xl overflow-hidden mt-8">
         <div className="p-4 border-b border-slate-200 flex items-center justify-between">
           <div>
             <h3 className="font-bold text-slate-900 text-sm font-mono">

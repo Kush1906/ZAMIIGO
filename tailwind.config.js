@@ -7,24 +7,25 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['Inter', 'system-ui', 'sans-serif'],
+        sans: ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif'],
+        mono: ['"Fira Code"', 'monospace'],
       },
       colors: {
         zamiigo: {
           teal: {
             DEFAULT: '#073B4C',
-            dark: '#003845',
-            light: '#115d75',
+            dark: '#20393E', // Wilderness North Deep Forest
+            light: '#2C4F56', // Wilderness North Pine
           },
           amber: {
-            DEFAULT: '#F0A500',
-            hover: '#d99200',
+            DEFAULT: '#FFB600', // Wilderness North Vibrant Amber
+            hover: '#e5a400',
             light: '#fff3cd',
           },
           ice: {
             DEFAULT: '#EEF4F8',
             dark: '#d1ecf1',
-            canvas: '#F7F9FA',
+            canvas: '#F0F4F8',
           }
         }
       }

@@ -44,7 +44,7 @@ export const OrderPickingTab: React.FC<OrderPickingTabProps> = ({
     <div className="space-y-6">
 
       {/* Top Controls & Metrics */}
-      <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
+      <div className="glass-panel rounded-3xl p-6">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
           <div>
             <div className="flex items-center space-x-2">
@@ -191,7 +191,7 @@ export const OrderPickingTab: React.FC<OrderPickingTabProps> = ({
               return (
                 <div
                   key={tote.tote_id}
-                  className="bg-white border border-slate-200 rounded-2xl p-4 space-y-3 hover:border-slate-300 transition-all flex flex-col justify-between"
+                  className="glass-panel hover-lift rounded-2xl p-5 space-y-4 flex flex-col justify-between"
                 >
                   <div>
                     {/* Tote Header */}
@@ -286,7 +286,7 @@ export const OrderPickingTab: React.FC<OrderPickingTabProps> = ({
           </div>
 
           {/* Printable Pick List Table (Active Cart) */}
-          <div className="mt-8 bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
+          <div className="mt-8 glass-panel rounded-3xl overflow-hidden">
             <div className="p-4 border-b border-slate-200 flex items-center justify-between">
               <div>
                 <h3 className="font-bold text-slate-900 text-sm font-mono">

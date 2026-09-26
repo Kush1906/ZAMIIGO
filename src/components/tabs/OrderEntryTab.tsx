@@ -62,7 +62,7 @@ export const OrderEntryTab: React.FC<OrderEntryTabProps> = ({ state, onUpdateSta
     <div className="space-y-6">
       
       {/* Top Banner & Context */}
-      <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
+      <div className="glass-panel rounded-3xl p-6">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
             <div className="flex items-center space-x-2">
@@ -110,7 +110,7 @@ export const OrderEntryTab: React.FC<OrderEntryTabProps> = ({ state, onUpdateSta
 
       {/* Unpackable Items Alert Banner (Items exceeding tote dimensions / weight) */}
       {state.unpackableItems && state.unpackableItems.length > 0 && (
-        <div className="bg-rose-50 border border-rose-200 rounded-2xl p-5 shadow-sm space-y-3">
+        <div className="glass-panel bg-rose-50/80 border-rose-200/50 rounded-3xl p-6 space-y-4">
           <div className="flex items-center space-x-2 text-rose-800">
             <AlertCircle className="h-5 w-5 text-rose-600 shrink-0" />
             <h3 className="font-bold text-sm font-mono">
@@ -182,7 +182,7 @@ export const OrderEntryTab: React.FC<OrderEntryTabProps> = ({ state, onUpdateSta
       </div>
 
       {/* Orders Table */}
-      <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
+      <div className="glass-panel rounded-3xl overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm">
             <thead className="bg-slate-50 border-b border-slate-200 text-xs uppercase tracking-wider text-slate-400 font-mono">

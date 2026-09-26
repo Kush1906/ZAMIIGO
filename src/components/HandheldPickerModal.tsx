@@ -41,8 +41,8 @@ export const HandheldPickerModal: React.FC<HandheldPickerModalProps> = ({ isOpen
   const progressPct = totalCartItems > 0 ? Math.round((pickedCartItemsCount / totalCartItems) * 100) : 0;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-slate-50 backdrop-blur-sm no-print">
-      <div className="bg-white border-2 border-slate-300 rounded-3xl w-full max-w-md h-[90vh] flex flex-col overflow-hidden shadow-2xl animate-in fade-in zoom-in-95 duration-150">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-slate-900/60 backdrop-blur-md no-print">
+      <div className="glass-panel border-2 border-zamiigo-teal-light rounded-3xl w-full max-w-md h-[90vh] flex flex-col overflow-hidden shadow-2xl animate-fade-in">
         
         {/* Handheld Device Header */}
         <div className="p-4 bg-slate-50 border-b border-slate-200 flex items-center justify-between shrink-0">
@@ -138,7 +138,7 @@ export const HandheldPickerModal: React.FC<HandheldPickerModalProps> = ({ isOpen
                       }`}
                     >
                       <div className="pr-3">
-                        <div className={`font-semibold text-xs leading-snug ${isPicked ? 'line-through text-slate-400' : 'text-slate-100'}`}>
+                        <div className={`font-semibold text-xs leading-snug ${isPicked ? 'line-through text-slate-400' : 'text-slate-800'}`}>
                           {item.product_name}
                         </div>
                         <div className="text-[10px] text-slate-400 font-mono mt-1 flex items-center space-x-2">

@@ -64,8 +64,8 @@ export const CsvUploadModal: React.FC<CsvUploadModalProps> = ({ isOpen, onClose,
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/30 backdrop-blur-sm no-print">
-      <div className="bg-white border border-slate-200 rounded-3xl w-full max-w-2xl overflow-hidden shadow-2xl">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-md no-print">
+      <div className="glass-panel border-white/20 rounded-3xl w-full max-w-2xl overflow-hidden shadow-2xl animate-fade-in">
         
         {/* Header */}
         <div className="p-5 border-b border-slate-200 flex items-center justify-between">
