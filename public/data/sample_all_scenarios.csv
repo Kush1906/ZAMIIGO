@@ -1,0 +1,82 @@
+batch_id,order_date,order_id,household_id,destination_community,product_id,product_name,weight_lb,length_in,width_in,height_in
+1,2026-07-01,ORD-1001,HH-01,Webequie,SKU-001,Whole Milk 1 Gallon,8.50,3.94,3.94,10.63
+1,2026-07-01,ORD-1001,HH-01,Webequie,SKU-002,White Sandwich Bread,1.50,11.42,5.51,4.72
+1,2026-07-01,ORD-1001,HH-01,Webequie,SKU-003,Cheddar Cheese Block 400g,0.88,2.36,4.13,7.09
+1,2026-07-01,ORD-1001,HH-01,Webequie,SKU-004,Chicken Breast Boneless 1kg,2.20,9.45,6.30,2.36
+1,2026-07-01,ORD-1001,HH-01,Webequie,SKU-005,Orange Juice 1.89L,4.23,3.54,3.54,10.63
+1,2026-07-01,ORD-1001,HH-01,Webequie,SKU-006,Eggs Large 18-Pack,2.50,11.81,4.13,2.76
+1,2026-07-01,ORD-1001,HH-01,Webequie,SKU-007,Rolled Oats 1kg,2.20,3.15,7.09,9.84
+1,2026-07-01,ORD-1001,HH-01,Webequie,SKU-008,Baby Spinach 142g,0.31,3.00,7.80,10.00
+1,2026-07-01,ORD-1001,HH-01,Webequie,SKU-009,Salted Butter 454g,1.00,6.10,2.95,2.76
+1,2026-07-01,ORD-1001,HH-01,Webequie,SKU-010,Canned Diced Tomatoes 796ml,1.90,2.64,2.64,4.33
+1,2026-07-01,ORD-1002,HH-02,Webequie,SKU-011,Granola Bar Variety Pack 20ct,1.32,5.90,8.27,2.36
+1,2026-07-01,ORD-1002,HH-02,Webequie,SKU-012,Sparkling Water 24-Pack,22.05,15.75,10.63,5.51
+1,2026-07-01,ORD-1002,HH-02,Webequie,SKU-013,Peanut Butter Smooth 1kg,2.20,4.33,4.33,5.90
+1,2026-07-01,ORD-1002,HH-02,Webequie,SKU-014,Strawberry Jam 500g,1.10,2.95,2.95,4.33
+1,2026-07-01,ORD-1002,HH-02,Webequie,SKU-015,All Purpose Flour 2kg,4.41,5.51,4.33,9.06
+1,2026-07-01,ORD-1002,HH-02,Webequie,SKU-016,Granulated Sugar 2kg,4.41,4.72,4.72,9.45
+1,2026-07-01,ORD-1002,HH-02,Webequie,SKU-017,Jasmine Rice 5lb Bag,5.00,9.84,6.30,2.36
+1,2026-07-01,ORD-1002,HH-02,Webequie,SKU-018,Olive Oil 750ml,1.65,3.15,3.15,10.24
+1,2026-07-01,ORD-1002,HH-02,Webequie,SKU-019,Pasta Penne 900g,1.98,2.56,4.33,6.69
+1,2026-07-01,ORD-1002,HH-02,Webequie,SKU-020,Marinara Sauce 680ml,1.50,3.19,3.19,6.88
+1,2026-07-01,ORD-1003,HH-03,Webequie,SKU-021,Greek Yogurt Plain 750g,1.65,5.12,5.12,6.30
+1,2026-07-01,ORD-1003,HH-03,Webequie,SKU-022,Blueberries 340g,0.75,6.30,2.17,8.66
+1,2026-07-01,ORD-1003,HH-03,Webequie,SKU-023,Raspberries 170g,0.38,4.92,3.74,1.77
+1,2026-07-01,ORD-1003,HH-03,Webequie,SKU-024,Strawberries 1lb,1.00,7.48,4.53,3.07
+1,2026-07-01,ORD-1003,HH-03,Webequie,SKU-025,Baby Carrots 500g,1.10,2.36,5.51,8.66
+1,2026-07-01,ORD-1004,HH-04,Webequie,SKU-026,Laundry Detergent Pods 42ct,2.65,7.87,9.84,3.94
+1,2026-07-01,ORD-1004,HH-04,Webequie,SKU-027,Dish Soap 532ml,2.47,11.20,4.50,2.70
+1,2026-07-01,ORD-1004,HH-04,Webequie,SKU-028,Paper Towel Double Roll 6pk,3.86,10.63,10.63,7.09
+1,2026-07-01,ORD-1004,HH-04,Webequie,SKU-029,Bathroom Tissue 12 Double Rolls,5.51,15.00,15.00,11.81
+1,2026-07-01,ORD-1004,HH-04,Webequie,SKU-030,Hand Soap Antibacterial 443ml,0.78,2.56,3.35,8.86
+1,2026-07-01,ORD-1005,HH-05,Webequie,SKU-031,Frozen Pepperoni Pizza 12in,2.00,12.20,12.20,1.97
+1,2026-07-01,ORD-1005,HH-05,Webequie,SKU-032,French Vanilla Ice Cream 1.5L,3.00,8.07,8.07,5.51
+1,2026-07-01,ORD-1005,HH-05,Webequie,SKU-033,Frozen Mixed Vegetables 1kg,2.20,9.45,6.30,2.36
+1,2026-07-01,ORD-1005,HH-05,Webequie,SKU-034,Frozen Breakfast Waffles 10ct,0.56,7.87,5.91,1.77
+1,2026-07-01,ORD-1005,HH-05,Webequie,SKU-035,Frozen Edamame Shelled 400g,0.88,9.06,5.91,2.36
+1,2026-07-01,ORD-1006,HH-06,Webequie,SKU-036,Infant Formula Stage 1 400g,0.88,4.92,4.92,6.69
+1,2026-07-01,ORD-1006,HH-06,Webequie,SKU-037,Baby Food Pureed Carrots 6-Pack,1.32,4.72,3.15,5.90
+1,2026-07-01,ORD-1006,HH-06,Webequie,SKU-038,Baby Wipes Sensitive 256ct,1.50,6.69,4.33,7.87
+1,2026-07-01,ORD-1006,HH-06,Webequie,SKU-039,Diapers Size 3 Jumbo Pack,3.53,14.96,9.84,7.09
+1,2026-07-01,ORD-1006,HH-06,Webequie,SKU-040,Kids Organic Yogurt Tubes 8ct,0.55,9.45,6.30,2.76
+1,2026-07-01,ORD-1007,HH-07,Webequie,SKU-041,Ibuprofen Tablets 200mg 100ct,0.50,2.95,2.17,5.51
+1,2026-07-01,ORD-1007,HH-07,Webequie,SKU-042,Vitamin D3 Supplements 120ct,0.22,2.36,2.36,4.72
+1,2026-07-01,ORD-1007,HH-07,Webequie,SKU-043,Bandages Assorted 100ct,0.19,0.98,3.94,6.69
+1,2026-07-01,ORD-1007,HH-07,Webequie,SKU-044,Antibiotic Ointment 28g,0.06,0.79,1.38,3.94
+1,2026-07-01,ORD-1007,HH-07,Webequie,SKU-045,Lubricant Eye Drops 15ml,0.04,1.38,2.17,4.92
+1,2026-07-01,ORD-1008,HH-08,Webequie,SKU-046,Whole Roasted Chicken 1.5kg,3.31,9.45,7.09,6.30
+1,2026-07-01,ORD-1008,HH-08,Webequie,SKU-047,Ground Beef 1kg Extra Lean,2.20,9.45,6.30,2.36
+1,2026-07-01,ORD-1008,HH-08,Webequie,SKU-048,Salmon Fillet Skinless 500g,1.10,9.84,5.12,1.97
+1,2026-07-01,ORD-1008,HH-08,Webequie,SKU-049,Smoked Sausage Links 400g,0.88,8.66,5.91,1.58
+1,2026-07-01,ORD-1008,HH-08,Webequie,SKU-050,Deli Turkey Breast Sliced 250g,0.55,2.36,4.72,7.09
+1,2026-07-01,ORD-1009,HH-09,Webequie,SKU-051,Diet Coke 12-Pack Cans,9.37,10.63,7.87,5.51
+1,2026-07-01,ORD-1009,HH-09,Webequie,SKU-052,Apple Juice 1.89L,4.41,3.54,2.95,9.25
+1,2026-07-01,ORD-1009,HH-09,Webequie,SKU-053,Sparkling Cranberry Juice 1L,2.20,2.76,2.76,10.43
+1,2026-07-01,ORD-1009,HH-09,Webequie,SKU-054,Coffee Dark Roast Whole Bean 907g,2.00,5.12,3.94,10.24
+1,2026-07-01,ORD-1009,HH-09,Webequie,SKU-055,Black Tea Bags 100ct,0.22,2.76,2.17,4.72
+1,2026-07-01,ORD-1010,HH-10,Webequie,SKU-056,Bulk Water Case 40x500ml,44.09,19.69,13.39,8.27
+1,2026-07-01,ORD-1010,HH-10,Webequie,SKU-057,Rice Cooker 3-Cup,3.31,9.45,9.45,7.87
+1,2026-07-01,ORD-1010,HH-10,Webequie,SKU-058,Cast Iron Skillet 10in,5.00,12.00,10.00,2.50
+1,2026-07-01,ORD-1011,HH-11,Webequie,SKU-059,Toothbrush Family Pack 4ct,0.22,1.18,3.15,7.09
+1,2026-07-01,ORD-1011,HH-11,Webequie,SKU-060,Toothpaste Fresh Mint 130ml,0.33,1.77,1.77,5.91
+1,2026-07-01,ORD-1011,HH-11,Webequie,SKU-061,Shampoo 750ml,1.65,2.95,2.95,9.84
+1,2026-07-01,ORD-1011,HH-11,Webequie,SKU-062,Body Wash 532ml,1.21,2.56,2.56,8.07
+1,2026-07-01,ORD-1011,HH-11,Webequie,SKU-063,Deodorant 85g,0.17,1.77,2.76,6.10
+1,2026-07-01,ORD-1011,HH-11,Webequie,SKU-064,Razor Blade Refills 4ct,0.09,1.38,3.15,4.72
+1,2026-07-01,ORD-1012,HH-12,Webequie,SKU-065,Potato Chips Family Size,0.50,4.33,7.87,12.20
+1,2026-07-01,ORD-1012,HH-12,Webequie,SKU-066,Chocolate Cookies 400g,0.88,7.87,3.94,1.97
+1,2026-07-01,ORD-1012,HH-12,Webequie,SKU-067,Gummy Bears 1kg,2.20,7.09,5.12,2.76
+1,2026-07-01,ORD-1012,HH-12,Webequie,SKU-068,Dark Chocolate Bar 100g,0.22,6.30,3.15,0.79
+1,2026-07-01,ORD-1012,HH-12,Webequie,SKU-069,Popcorn Microwave 3-Pack,0.75,3.15,7.09,9.45
+1,2026-07-01,ORD-1013,HH-13,Webequie,SKU-070,Oversize: Bottled Water Pallet (Huge),110.23,48.00,40.00,48.00
+1,2026-07-01,ORD-1013,HH-13,Webequie,SKU-071,Brown Sugar 2kg,4.41,5.51,4.33,7.09
+1,2026-07-01,ORD-1014,HH-14,Webequie,SKU-072,Organic Whole Milk 3.78L,8.82,5.12,5.12,11.81
+1,2026-07-01,ORD-1014,HH-14,Webequie,SKU-073,Organic Free-Run Eggs 12ct,1.32,11.81,4.13,2.76
+1,2026-07-01,ORD-1014,HH-14,Webequie,SKU-074,Organic Sourdough Bread,1.50,3.94,5.91,6.69
+1,2026-07-01,ORD-1014,HH-14,Webequie,SKU-075,Oversize: 55lb Bag Dog Food,55.00,26.00,18.00,8.00
+1,2026-07-01,ORD-1014,HH-14,Webequie,SKU-076,Organic Almond Milk 1.89L,4.21,3.54,2.36,9.06
+1,2026-07-01,ORD-1015,HH-15,Webequie,SKU-077,Canned Black Beans 540ml,1.21,4.13,2.64,2.64
+1,2026-07-01,ORD-1015,HH-15,Webequie,SKU-078,Canned Chickpeas 540ml,1.21,4.13,2.64,2.64
+1,2026-07-01,ORD-1015,HH-15,Webequie,SKU-079,Canned Corn 341ml,0.72,3.15,2.36,4.33
+1,2026-07-01,ORD-1015,HH-15,Webequie,SKU-080,Canned Tuna 170g x4,1.50,7.09,3.54,2.76
+1,2026-07-01,ORD-1015,HH-15,Webequie,SKU-081,Canned Salmon 213g x2,0.94,6.10,4.13,2.68

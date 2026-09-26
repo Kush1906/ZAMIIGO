@@ -335,7 +335,7 @@ export const OrderPickingTab: React.FC<OrderPickingTabProps> = ({
                         <td className="py-2.5 px-3 font-mono text-slate-800">
                           HH #{item.household_id}
                         </td>
-                        <td className="py-2.5 px-3 font-medium text-slate-100">
+                        <td className="py-2.5 px-3 font-medium text-slate-800">
                           {item.product_name}
                         </td>
                         <td className="py-2.5 px-3 font-mono text-slate-400">

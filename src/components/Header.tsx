@@ -55,7 +55,7 @@ export const Header: React.FC<HeaderProps> = ({
             </div>
           </div>
 
-          {/* Dataset Stage Switcher (Segmented Control) */}
+          {/* Dataset Stage Switcher (Segmented Control) — Desktop */}
           <div className="hidden lg:flex items-center bg-black/30 p-1.5 rounded-2xl border border-white/10 backdrop-blur-md shadow-inner shrink-0">
             <button
               onClick={() => onSelectStage('stage1')}
@@ -89,12 +89,26 @@ export const Header: React.FC<HeaderProps> = ({
             </button>
           </div>
 
+          {/* Dataset Stage Switcher — Mobile/Tablet Dropdown */}
+          <div className="flex lg:hidden shrink-0">
+            <select
+              value={state.activeStage}
+              onChange={(e) => onSelectStage(e.target.value as 'stage1' | 'stage2' | 'bonus')}
+              className="bg-white/10 text-white text-xs font-semibold rounded-xl px-3 py-2 border border-white/20 focus:outline-none focus:ring-1 focus:ring-zamiigo-amber/50 backdrop-blur-md"
+            >
+              <option value="stage1" className="bg-zamiigo-teal-dark text-white">Stage 1</option>
+              <option value="stage2" className="bg-zamiigo-teal-dark text-white">Stage 2</option>
+              <option value="bonus" className="bg-zamiigo-teal-dark text-white">Bonus Round</option>
+              {state.activeStage === 'custom' && <option value="custom" className="bg-zamiigo-teal-dark text-white">Custom CSV</option>}
+            </select>
+          </div>
+
           {/* Quick Action Tools */}
           <div className="flex items-center space-x-2 sm:space-x-3 shrink-0">
-            {/* Upload CSV */}
+            {/* Upload CSV — always visible */}
             <button
               onClick={onOpenUpload}
-              className={`hidden sm:flex px-3.5 py-2 rounded-xl text-xs font-bold items-center space-x-1.5 transition-all duration-300 ${
+              className={`flex px-2.5 sm:px-3.5 py-2 rounded-xl text-xs font-bold items-center space-x-1.5 transition-all duration-300 ${
                 state.activeStage === 'custom'
                   ? 'bg-gradient-to-r from-zamiigo-amber to-amber-400 text-slate-900 shadow-[0_0_15px_rgba(255,182,0,0.3)] border border-zamiigo-amber/50 scale-95'
                   : 'bg-white/10 text-white hover:bg-white/20 border border-white/10'
@@ -102,92 +116,94 @@ export const Header: React.FC<HeaderProps> = ({
               title="Upload custom CSV"
             >
               <Upload className="h-4 w-4" />
-              <span>CSV</span>
+              <span className="hidden sm:inline">CSV</span>
             </button>
 
             {/* Live System Health Badge */}
             <div className="flex items-center">
               {errorCount === 0 && warningCount === 0 ? (
-                <div className="flex items-center space-x-1.5 px-3 py-2 rounded-xl bg-emerald-500/20 border border-emerald-400/30 text-emerald-300 text-[11px] font-bold backdrop-blur-md shadow-sm whitespace-nowrap">
+                <div className="flex items-center space-x-1.5 px-2 sm:px-3 py-2 rounded-xl bg-emerald-500/20 border border-emerald-400/30 text-emerald-300 text-[11px] font-bold backdrop-blur-md shadow-sm whitespace-nowrap">
                   <CheckCircle className="h-3.5 w-3.5" />
                   <span className="hidden xl:inline">Healthy</span>
                 </div>
               ) : (
-                <div className="flex items-center space-x-1.5 px-3 py-2 rounded-xl bg-amber-500/20 border border-amber-400/30 text-amber-300 text-[11px] font-bold backdrop-blur-md shadow-sm whitespace-nowrap">
+                <div className="flex items-center space-x-1.5 px-2 sm:px-3 py-2 rounded-xl bg-amber-500/20 border border-amber-400/30 text-amber-300 text-[11px] font-bold backdrop-blur-md shadow-sm whitespace-nowrap">
                   <AlertTriangle className="h-3.5 w-3.5" />
                   <span>{errorCount} err, {warningCount} warn</span>
                 </div>
               )}
             </div>
 
-            <div className="flex space-x-1.5 sm:space-x-2">
-              {/* Handheld Picker Simulation Button */}
+            <div className="flex space-x-1.5">
+              {/* Handheld Picker Button */}
               <button
                 onClick={onToggleHandheld}
-                className="p-2.5 rounded-xl bg-white/5 hover:bg-white/15 text-white border border-white/10 transition-all duration-300 shadow-sm hover:shadow-md hover:scale-105"
+                className="flex flex-col items-center justify-center p-2 rounded-xl bg-white/5 hover:bg-white/15 text-white border border-white/10 transition-all duration-300 hover:scale-105 min-w-[36px]"
                 title="Open Mobile Handheld Scanner View"
               >
                 <Smartphone className="h-4 w-4" />
+                <span className="text-[9px] mt-0.5 hidden sm:block">Scan</span>
               </button>
 
               {/* Settings Button */}
               <button
                 onClick={onOpenSettings}
-                className="p-2.5 rounded-xl bg-white/5 hover:bg-white/15 text-white border border-white/10 transition-all duration-300 shadow-sm hover:shadow-md hover:scale-105"
-                title="Adjust Parameters (Totes per Cart, limits)"
+                className="flex flex-col items-center justify-center p-2 rounded-xl bg-white/5 hover:bg-white/15 text-white border border-white/10 transition-all duration-300 hover:scale-105 min-w-[36px]"
+                title="Adjust Parameters"
               >
                 <Sliders className="h-4 w-4" />
+                <span className="text-[9px] mt-0.5 hidden sm:block">Config</span>
               </button>
             </div>
           </div>
         </div>
 
-        {/* 3 Connected Tabs Navigation */}
-        <div className="flex space-x-2 -mb-px mt-2 overflow-x-auto no-scrollbar">
+        {/* Navigation Tabs */}
+        <div className="flex space-x-1 sm:space-x-2 -mb-px mt-2 overflow-x-auto no-scrollbar">
           <button
             onClick={() => setActiveTab('entry')}
-            className={`group relative flex items-center space-x-3 py-3.5 px-6 text-sm font-bold transition-all duration-300 rounded-t-xl overflow-hidden ${
+            className={`group relative flex items-center space-x-1.5 sm:space-x-3 py-3 sm:py-3.5 px-3 sm:px-6 text-xs sm:text-sm font-bold transition-all duration-300 rounded-t-xl overflow-hidden flex-shrink-0 ${
               activeTab === 'entry'
                 ? 'text-zamiigo-amber bg-white/10 backdrop-blur-xl'
                 : 'text-white/60 hover:text-white hover:bg-white/5'
             }`}
           >
             {activeTab === 'entry' && <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-zamiigo-amber to-amber-300 shadow-[0_-2px_10px_rgba(255,182,0,0.5)]" />}
-            <ShoppingCart className={`h-4 w-4 relative z-10 transition-transform duration-300 ${activeTab === 'entry' ? 'scale-110 drop-shadow-md' : 'group-hover:scale-110'}`} />
+            <ShoppingCart className={`h-4 w-4 relative z-10 transition-transform duration-300 shrink-0 ${activeTab === 'entry' ? 'scale-110 drop-shadow-md' : 'group-hover:scale-110'}`} />
             <span className="whitespace-nowrap relative z-10">Order Staging</span>
-            <span className={`relative z-10 ml-2 px-2.5 py-0.5 text-xs rounded-full font-mono transition-colors ${activeTab === 'entry' ? 'bg-zamiigo-amber/20 text-zamiigo-amber shadow-[0_0_8px_rgba(255,182,0,0.3)] border border-zamiigo-amber/30' : 'bg-black/30 text-white/80 border border-white/5'}`}>
+            <span className={`relative z-10 px-2 py-0.5 text-xs rounded-full font-mono transition-colors shrink-0 ${activeTab === 'entry' ? 'bg-zamiigo-amber/20 text-zamiigo-amber shadow-[0_0_8px_rgba(255,182,0,0.3)] border border-zamiigo-amber/30' : 'bg-black/30 text-white/80 border border-white/5'}`}>
               {state.orders.length}
             </span>
           </button>
 
           <button
             onClick={() => setActiveTab('picking')}
-            className={`group relative flex items-center space-x-3 py-3.5 px-6 text-sm font-bold transition-all duration-300 rounded-t-xl overflow-hidden ${
+            className={`group relative flex items-center space-x-1.5 sm:space-x-3 py-3 sm:py-3.5 px-3 sm:px-6 text-xs sm:text-sm font-bold transition-all duration-300 rounded-t-xl overflow-hidden flex-shrink-0 ${
               activeTab === 'picking'
                 ? 'text-zamiigo-amber bg-white/10 backdrop-blur-xl'
                 : 'text-white/60 hover:text-white hover:bg-white/5'
             }`}
           >
             {activeTab === 'picking' && <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-zamiigo-amber to-amber-300 shadow-[0_-2px_10px_rgba(255,182,0,0.5)]" />}
-            <Package className={`h-4 w-4 relative z-10 transition-transform duration-300 ${activeTab === 'picking' ? 'scale-110 drop-shadow-md' : 'group-hover:scale-110'}`} />
+            <Package className={`h-4 w-4 relative z-10 transition-transform duration-300 shrink-0 ${activeTab === 'picking' ? 'scale-110 drop-shadow-md' : 'group-hover:scale-110'}`} />
             <span className="whitespace-nowrap relative z-10">Tote Fulfillment</span>
-            <span className={`relative z-10 ml-2 px-2.5 py-0.5 text-xs rounded-full font-mono transition-colors ${activeTab === 'picking' ? 'bg-zamiigo-amber/20 text-zamiigo-amber shadow-[0_0_8px_rgba(255,182,0,0.3)] border border-zamiigo-amber/30' : 'bg-black/30 text-white/80 border border-white/5'}`}>
+            <span className={`relative z-10 px-2 py-0.5 text-xs rounded-full font-mono transition-colors shrink-0 ${activeTab === 'picking' ? 'bg-zamiigo-amber/20 text-zamiigo-amber shadow-[0_0_8px_rgba(255,182,0,0.3)] border border-zamiigo-amber/30' : 'bg-black/30 text-white/80 border border-white/5'}`}>
               {state.totes.length}
             </span>
           </button>
 
           <button
             onClick={() => setActiveTab('flight')}
-            className={`group relative flex items-center space-x-3 py-3.5 px-6 text-sm font-bold transition-all duration-300 rounded-t-xl overflow-hidden ${
+            className={`group relative flex items-center space-x-1.5 sm:space-x-3 py-3 sm:py-3.5 px-3 sm:px-6 text-xs sm:text-sm font-bold transition-all duration-300 rounded-t-xl overflow-hidden flex-shrink-0 ${
               activeTab === 'flight'
                 ? 'text-zamiigo-amber bg-white/10 backdrop-blur-xl'
                 : 'text-white/60 hover:text-white hover:bg-white/5'
             }`}
           >
             {activeTab === 'flight' && <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-zamiigo-amber to-amber-300 shadow-[0_-2px_10px_rgba(255,182,0,0.5)]" />}
-            <Plane className={`h-4 w-4 relative z-10 transition-transform duration-300 ${activeTab === 'flight' ? 'scale-110 drop-shadow-md' : 'group-hover:scale-110'}`} />
-            <span className="whitespace-nowrap relative z-10">Flight Operations</span>
-            <span className={`relative z-10 ml-2 px-2.5 py-0.5 text-xs rounded-full font-mono transition-colors ${activeTab === 'flight' ? 'bg-zamiigo-amber/20 text-zamiigo-amber shadow-[0_0_8px_rgba(255,182,0,0.3)] border border-zamiigo-amber/30' : 'bg-black/30 text-white/80 border border-white/5'}`}>
+            <Plane className={`h-4 w-4 relative z-10 transition-transform duration-300 shrink-0 ${activeTab === 'flight' ? 'scale-110 drop-shadow-md' : 'group-hover:scale-110'}`} />
+            <span className="whitespace-nowrap relative z-10">Flight Ops</span>
+            <span className={`relative z-10 px-2 py-0.5 text-xs rounded-full font-mono transition-colors shrink-0 ${activeTab === 'flight' ? 'bg-zamiigo-amber/20 text-zamiigo-amber shadow-[0_0_8px_rgba(255,182,0,0.3)] border border-zamiigo-amber/30' : 'bg-black/30 text-white/80 border border-white/5'}`}>
               {state.departures.length}
             </span>
           </button>

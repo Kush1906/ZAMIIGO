@@ -1,0 +1,4 @@
+departure_id,departure_date,available_totes,available_payload_lb,available_volume_cuft
+DEP-A,2026-07-01,15,480,31.25
+DEP-B,2026-07-03,30,960,62.50
+DEP-C,2026-07-05,90,2877,187.50

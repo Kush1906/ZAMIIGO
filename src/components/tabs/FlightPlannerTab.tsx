@@ -644,7 +644,7 @@ export const FlightPlannerTab: React.FC<FlightPlannerTabProps> = ({ state }) => 
                       {tote.assigned_household_ids.map(h => `Household #${h}`).join(', ')}
                     </td>
                     <td className="py-3 px-4 text-slate-700">{tote.items.length} items</td>
-                    <td className="py-3 px-4 font-mono font-bold text-slate-100">{tote.total_weight_lb} lb</td>
+                    <td className="py-3 px-4 font-mono font-bold text-slate-800">{tote.total_weight_lb} lb</td>
                     <td className="py-3 px-4 font-mono text-slate-400">
                       {tote.volume_fill_pct}% ({tote.total_volume_cuin} cu in)
                     </td>
